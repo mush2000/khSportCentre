@@ -4,9 +4,7 @@
 
 <configuration>
 	<mappers>
-		<mapper resource="/mappings/sample-mapper.xml"/>
 		<mapper resource="/mappings/member-mapper.xml"/>
-		<mapper resource="/mappings/class-mapper.xml"/>
 		<mapper resource="/mappings/class2-mapper.xml"/>
 		<mapper resource="/mappings/admin-mapper.xml"/>
 		<mapper resource="/mappings/board-mapper.xml"/>

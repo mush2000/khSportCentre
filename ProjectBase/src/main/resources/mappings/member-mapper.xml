@@ -22,7 +22,6 @@
 	<resultMap type="com.spring.biz.vo.LoginInfoVO" id="login">
 		<result column="MEMBER_ID"			property="memberId" />
 		<result column="MEMBER_NAME"		property="memberName" />
-		<!-- <result column="STU_NUM" property="stuNum"/> -->
 		<result column="INST_NUM"			property="instNum" />
 		<result column="WRONG_PW_CNT"		property="wrongPwCnt" />
 	</resultMap>
@@ -44,7 +43,6 @@
 
 	<resultMap type="com.spring.biz.vo.RentalPlaceVO" id="rentalPlace2">
 		<result column="RENTAL_CODE"			property="rentalCode" />
-		<!-- <result column="RENTAL_PLACE_CODE" property="rentalPlaceCode"/> -->
 		<result column="RENTAL_DATE"			property="rentalDate" />
 		<result column="RENTAL_TIME"			property="rentalTime" />
 		<result column="PLACE_NAME"				property="placeName" />

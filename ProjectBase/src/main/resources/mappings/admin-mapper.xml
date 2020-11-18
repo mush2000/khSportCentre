@@ -5,21 +5,6 @@
 <!-- 맵퍼파일 생성 후 반드시 sql-map-config.xml 파일에 mapper 등록해줘야 함 -->
 <mapper namespace="adminMapper">
 	
-	<!-- <update id="updateMemberInfo">
-		UPDATE MEMBER_INFO
-		SET
-	 	MEMBER_ADDR = #{memberAddr}
-		, MEMBER_TEL = #{memberTel}
-		, MEMBER_TEL2 = #{memberTel2}
-		, MEMBER_EMAIL = #{memberEmail}
-		WHERE MEMBER_ID = #{memberId}
-	</update> -->	
-	
-	<!-- <select id="getListCnt" parameterType="String" resultType="int">
-		SELECT COUNT(*) AS LIST_CNT
-		FROM ${value}
-	</select> -->
-	
 	<!-- 해당테이블(회원)의 개수를 조회 -->
 	<select id="getListCntMap" parameterType="hashMap" resultType="int">
  		SELECT COUNT(*) AS LIST_CNT
@@ -33,7 +18,6 @@
 			OR UPPER(MEMBER_NAME) LIKE UPPER('%'||#{nameKeyword}||'%'))
 		</if>
 	</select>
-	
 	
 	<!-- 삭제여부, 키워드를 이용해서 회원을 조회 -->
 	<select id="selectMemberInfoList2" parameterType="hashMap" resultMap="memberMapper.member">
@@ -62,6 +46,5 @@
 		    )
 		WHERE NUM BETWEEN #{pagination.startList} AND #{pagination.listSize}
 	</select>
-	
 	
 </mapper>
