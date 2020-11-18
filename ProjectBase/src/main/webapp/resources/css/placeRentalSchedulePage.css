@@ -1,0 +1,194 @@
+@charset "UTF-8";
+/* 웹폰트 : 에스코어드림Md체 */
+@font-face {
+	font-family: 'S-CoreDream-5Medium';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Reg체 */
+@font-face {
+	font-family: 'S-CoreDream-4Regular';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 나눔스퀘어라운드체 */
+@font-face { 
+	font-family: 'NanumSquareRound'; 
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff'); 
+	font-weight: normal; 
+	font-style: normal;
+}
+
+.contentsTitle1 {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.contentsTitle2 {
+    height: 100px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+h1.contentsTitle{
+	line-height: 80px;
+	font-weight: bold;
+	text-align: center;
+}
+
+table.calendarTable
+, table.dataValue{
+	border-bottom: 1px solid #dddddd;
+}
+
+table.calendarTable .title
+, table.dataValue .rentalTableTitle{
+	font-weight: bold;
+	background-color: #F7F7F7;
+	text-align: center;
+	border-top: 3px solid #0034a9;
+	border-right: 1px solid #ddd;
+}
+
+table.dataValue .rentalTableTitle{
+	border-bottom: 1px solid #ddd;
+}
+
+.dataValue > tr
+, .dataValue > tr > td{
+	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+}
+
+.calendarTable{
+    display: inline-table;
+}
+
+.calendarTable .doDate {
+    left: 7px;
+    position: relative;
+    top: -12px;
+    left: -10px;
+    font-size: 16px;
+}         
+.calendarTable .doReserveY {
+    text-align: center;
+    vertical-align: middle;
+    display: block;
+    position: relative;
+    top: 5px;
+    height: 22px;
+    background-color: #0034a9;
+    border-radius: 5px;
+    color: white;    
+}
+
+.calendarTable .doReserveY:hover {
+    text-align: center;
+    vertical-align: middle;
+    display: block;
+    position: relative;
+    top: 5px;
+    height: 22px;
+    background-color: #0034a9;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px 1px gray;
+    
+}
+
+.calendarTable .doReserveN {
+    text-align: center;
+    vertical-align: middle;
+    display: block;
+    position: relative;
+    top: 5px;
+    height: 22px;
+    background-color: lightgray;
+    border-radius: 5px;
+    color: white;
+    font-weight: lighter;    
+}
+
+#mainBar > #prevMonth
+, #mainBar > #nextMonth {
+	border-top: none;
+	text-align: center;
+	vertical-align: middle;
+}
+
+#mainBar > #yearMonth {
+	border-top: none;
+	text-align: center;
+	font-size: 1.8em;
+	vertical-align: middle;
+	color: #0034a9;
+	font-weight: bold;
+}
+
+#prevMonthBtn
+, #nextMonthBtn {
+	background-repeat: no-repeat;
+    width: 34px;
+    height: 34px;
+    text-indent: -6000px;
+    border: none;
+    cursor: pointer;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    position: relative;
+    top: 5px;
+}
+
+
+/* 모달창 */
+#modalLayer{
+	display: none;
+	position: relative;
+}
+
+#modalLayer .modalContent{
+	width: 600px;
+	height: 500px;
+	position: fixed;
+	left: 50%; 
+	top: 50%;
+	z-index: 9001;
+	background: #fff;
+	border-radius: 10px;
+}
+
+#modalLayer .modalContent span.close{
+	position: absolute;
+	right: 0;
+	cursor: pointer;
+	opacity: 100%;
+	padding: 22px 20px 20px 20px;
+	color: gold;
+}
+
+#modalLayer .content{
+	padding: 20px;
+}
+
+#modalLayer .title{
+	font-size: 20px; 
+	padding: 20px; 
+	background : #0034a9;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	color: white;
+	margin-bottom: 0;
+}
+
+#mask{  
+    position:absolute;  
+    z-index:5000;  
+    background-color:#000;  
+    display:none;  
+    left:0;
+    top:0;
+} 

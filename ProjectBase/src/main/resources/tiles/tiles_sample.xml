@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<definition name="baseLayout" template="/WEB-INF/view/common/template.jsp">
+		<put-attribute name="title" value="울산KH스포츠센터"/>
+		<put-attribute name="menu" value="/WEB-INF/view/common/menu.jsp"/>
+		<put-attribute name="body" value=""/>
+		<put-attribute name="foot" value="/WEB-INF/view/common/bottom.jsp"/>
+	</definition>
+	
+	<!-- <definition name="common/*" extends="baseLayout">
+		<put-attribute name="body" value="/WEB-INF/view/common/{1}.jsp" />
+	</definition>
+	
+	<definition name="member/*" extends="baseLayout">
+		<put-attribute name="body" value="/WEB-INF/view/member/{1}.jsp" />
+	</definition>
+	
+	<definition name="admin/*" extends="baseLayout">
+		<put-attribute name="body" value="/WEB-INF/view/admin/{1}.jsp" />
+	</definition>
+	
+	<definition name="center/*" extends="baseLayout">
+		<put-attribute name="body" value="/WEB-INF/view/center/{1}.jsp" />
+	</definition> -->
+	
+	<definition name="*/*" extends="baseLayout">
+		<put-attribute name="body" value="/WEB-INF/view/{1}/{2}.jsp" />
+	</definition>
+	
+</tiles-definitions>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 맵퍼파일 생성 후 반드시 sql-map-config.xml 파일에 mapper 등록해줘야 함 -->
+<mapper namespace="boardMapper">
+
+	<resultMap type="com.spring.biz.vo.BoardVO" id="board">
+		<result column="BOARD_NUM" 		property="boardNum"/>
+		<result column="KIND_OF_BOARD" 	property="kindOfBoard"/>
+		<result column="BOARD_TITLE" 	property="boardTitle"/>
+		<result column="BOARD_CONTENT"  property="boardContent"/>
+		<result column="VIEW_COUNT" 	property="viewCount"/>
+		<result column="ORIGIN_BOARD" 	property="originBoard"/>
+		<result column="CREATE_DATE" 	property="createDate"/>
+		<result column="MEMBER_ID" 		property="memberId"/>
+		<result column="IS_SECRET" 		property="isSecret"/>
+		<result column="KIND_CODE" 		property="kindCode"/>
+		<result column="KIND_NAME" 		property="kindName"/>
+		<result column="REPLY_CNT" 		property="replyCnt"/>
+		<result column="FILE_CNT" 		property="fileCnt"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.BoardKindVO" id="boardKind">
+		<result column="KIND_CODE" 			property="kindCode"/>
+		<result column="KIND_NAME" 			property="kindName"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.ReplyVO" id="reply">
+		<result column="REPLY_NUM" 			property="replyNum"/>
+		<result column="REPLY_BOARD_NUM" 	property="replyBoardNum"/>
+		<result column="REPLY_MEMBER_ID" 	property="replyMemberId"/>
+		<result column="REPLY_CONTENT" 		property="replyContent"/>
+		<result column="REPLY_CREATE_DATE" 	property="replyCreateDate"/>
+		<result column="REPLY_IS_SECRET" 	property="replyIsSecret"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.FileVO" id="file">
+		<result column="FILE_NUM" 			property="fileNum"/>
+		<result column="BOARD_NUM" 			property="boardNum"/>
+		<result column="ORIGIN_FILE_NAME" 	property="originFileName"/>
+		<result column="STORED_FILE_NAME" 	property="storedFileName"/>
+		<result column="FILE_SIZE" 			property="fileSize"/>
+		<result column="DEL_YN"  			property="delYn"/>
+	</resultMap>
+
+	<select id="viewBoard" parameterType="hashMap" resultMap="board">
+            SELECT  ROW_NUM
+            		, LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM 
+	                , KIND_OF_BOARD
+	                , BOARD_TITLE
+	                , BOARD_CONTENT
+	                , VIEW_COUNT
+	                , ORIGIN_BOARD 
+	                , CREATE_DATE
+	                , MEMBER_ID
+	                , IS_SECRET
+	                , KIND_NAME
+                	, REPLY_CNT
+                    , FILE_CNT 
+			FROM ( 
+				SELECT LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM 
+	                , KIND_OF_BOARD
+	                , BOARD_TITLE
+	                , BOARD_CONTENT
+	                , VIEW_COUNT
+	                , ORIGIN_BOARD 
+	                , CREATE_DATE
+	                , MEMBER_ID
+	                , IS_SECRET
+	                , KIND_NAME
+	                , REPLY_CNT
+                    , FILE_CNT 
+	                , ROWNUM AS ROW_NUM
+	            FROM (
+	            	SELECT LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM
+	                , KIND_OF_BOARD
+	                , BOARD_TITLE
+	                , BOARD_CONTENT
+	                , VIEW_COUNT
+	                , ORIGIN_BOARD 
+	                , CREATE_DATE
+	                , MEMBER_ID
+	                , IS_SECRET
+	                , KIND_NAME
+	                , REPLY_CNT
+                    , FILE_CNT 
+	        FROM (SELECT * FROM ( 
+	            SELECT  LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM
+						, KIND_OF_BOARD
+						, BOARD_TITLE
+						, BOARD_CONTENT
+						, VIEW_COUNT
+						, ORIGIN_BOARD 
+						, TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS CREATE_DATE
+						, MEMBER_ID
+						, IS_SECRET
+						, K.KIND_NAME
+				    	, (SELECT COUNT(*) FROM REPLY WHERE REPLY_BOARD_NUM = BOARD_NUM) AS REPLY_CNT
+				    	, (SELECT COUNT(*) FROM FILES WHERE BOARD_NUM = B.BOARD_NUM) AS FILE_CNT
+			        FROM BOARD B, BOARD_KIND K
+	                WHERE B.KIND_OF_BOARD = K.KIND_CODE
+	                AND KIND_CODE = #{kindCode}
+	                
+	                <if test="searchType == 'all'">
+		                AND (      UPPER(BOARD_TITLE) LIKE '%'||UPPER(#{keyword})||'%'
+		                        OR UPPER(BOARD_CONTENT) LIKE '%'||UPPER(#{keyword})||'%'
+		                        OR UPPER(MEMBER_ID)  LIKE '%'||UPPER(#{keyword})||'%'
+		                        OR (ORIGIN_BOARD IS NOT NULL AND MEMBER_ID IN 
+	                                   (SELECT MEMBER_ID
+	                                    FROM BOARD
+	                                    WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+	                                                            FROM BOARD
+	                                                            WHERE BOARD_TITLE LIKE '%'||UPPER(#{keyword})||'%'
+	                                                                OR BOARD_CONTENT LIKE '%'||UPPER(#{keyword})||'%'
+	                                                                OR MEMBER_ID  LIKE '%'||UPPER(#{keyword})||'%'		)
+	                                                                                        							)	
+                                                                                           								)
+												                    													) 
+												                    														     
+	                </if>
+	                <if test="searchType == 'id'">
+		                AND (UPPER(MEMBER_ID)     LIKE '%'||UPPER(#{keyword})||'%'
+		                		OR (ORIGIN_BOARD IS NOT NULL AND MEMBER_ID IN 
+		                				(SELECT MEMBER_ID
+		                			     FROM BOARD
+		                				 WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+		                                                        FROM BOARD
+		                                                        WHERE UPPER(MEMBER_ID) LIKE '%'||UPPER(#{keyword})||'%')
+					                                 														)
+					                           																	)
+					                     																			)
+					                     																				 
+	                </if>
+	                <if test="searchType == 'title'">
+		               	AND (UPPER(BOARD_TITLE)   LIKE '%'||UPPER(#{keyword})||'%'
+		               			OR (ORIGIN_BOARD IS NOT NULL AND BOARD_NUM IN 
+		                 				(SELECT BOARD_NUM
+		                 			     FROM BOARD
+		                 				 WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+		                                                         FROM BOARD
+		                                                         WHERE UPPER(BOARD_TITLE) LIKE '%'||UPPER(#{keyword})||'%')
+						                                  														)
+						                            																)
+						                      																			)
+						                      																				  
+	                </if>
+	                <if test="searchType == 'content'">
+	                        AND (UPPER(BOARD_CONTENT) LIKE '%'||UPPER(#{keyword})||'%'
+	                        		OR (ORIGIN_BOARD IS NOT NULL AND MEMBER_ID IN 
+	                        				(SELECT MEMBER_ID
+	                        			     FROM BOARD
+	                        				 WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+	                                                                FROM BOARD
+	                                                                WHERE UPPER(BOARD_CONTENT) LIKE '%'||UPPER(#{keyword})||'%')
+					                                         														)
+					                                   																	)
+					                             																			)
+	                </if>
+	                                                                                                    )
+	            START WITH ORIGIN_BOARD IS NULL
+	            CONNECT BY PRIOR BOARD_NUM = ORIGIN_BOARD
+	            ORDER SIBLINGS BY NVL2(ORIGIN_BOARD, '', BOARD_NUM) DESC ))
+	             
+				)
+			WHERE ROW_NUM BETWEEN #{pagination.startList} AND #{pagination.listSize}
+                           
+	</select>
+	
+	<!-- 위의 검색결과에서 페이징 조건을 빼고 갯수를 구한것 -->
+	<select id="getBoardListCnt" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) FROM (SELECT  ROW_NUM
+            		, LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM 
+	                , KIND_OF_BOARD
+	                , BOARD_TITLE
+	                , BOARD_CONTENT
+	                , VIEW_COUNT
+	                , ORIGIN_BOARD 
+	                , CREATE_DATE
+	                , MEMBER_ID
+	                , IS_SECRET
+	                , KIND_NAME
+                	
+			FROM ( 
+				SELECT LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM 
+	                , KIND_OF_BOARD
+	                , BOARD_TITLE
+	                , BOARD_CONTENT
+	                , VIEW_COUNT
+	                , ORIGIN_BOARD 
+	                , CREATE_DATE
+	                , MEMBER_ID
+	                , IS_SECRET
+	                , KIND_NAME
+	                , ROWNUM AS ROW_NUM
+	            FROM (
+	            	SELECT LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM
+	                , KIND_OF_BOARD
+	                , BOARD_TITLE
+	                , BOARD_CONTENT
+	                , VIEW_COUNT
+	                , ORIGIN_BOARD 
+	                , CREATE_DATE
+	                , MEMBER_ID
+	                , IS_SECRET
+	                , KIND_NAME
+	                
+	        FROM (SELECT * FROM ( 
+	            SELECT  LPAD(BOARD_NUM , 5, '0') AS BOARD_NUM
+						, KIND_OF_BOARD
+						, BOARD_TITLE
+						, BOARD_CONTENT
+						, VIEW_COUNT
+						, ORIGIN_BOARD 
+						, TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') AS CREATE_DATE
+						, MEMBER_ID
+						, IS_SECRET
+						, K.KIND_NAME
+				    	
+			        FROM BOARD B, BOARD_KIND K
+	                WHERE B.KIND_OF_BOARD = K.KIND_CODE
+	                AND KIND_CODE = #{kindCode}
+	                
+	                <if test="searchType == 'all'">
+		                AND (      UPPER(BOARD_TITLE) LIKE '%'||UPPER(#{keyword})||'%'
+		                        OR UPPER(BOARD_CONTENT) LIKE '%'||UPPER(#{keyword})||'%'
+		                        OR UPPER(MEMBER_ID)  LIKE '%'||UPPER(#{keyword})||'%'
+		                        OR (ORIGIN_BOARD IS NOT NULL AND MEMBER_ID IN 
+	                                   (SELECT MEMBER_ID
+	                                    FROM BOARD
+	                                    WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+	                                                            FROM BOARD
+	                                                            WHERE BOARD_TITLE LIKE '%'||UPPER(#{keyword})||'%'
+	                                                                OR BOARD_CONTENT LIKE '%'||UPPER(#{keyword})||'%'
+	                                                                OR MEMBER_ID  LIKE '%'||UPPER(#{keyword})||'%'		)
+	                                                                                        							)	
+                                                                                           								)
+												                    													) 
+												                    														     
+	                </if>
+	                <if test="searchType == 'id'">
+		                AND (UPPER(MEMBER_ID)     LIKE '%'||UPPER(#{keyword})||'%'
+		                		OR (ORIGIN_BOARD IS NOT NULL AND MEMBER_ID IN 
+		                				(SELECT MEMBER_ID
+		                			     FROM BOARD
+		                				 WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+		                                                        FROM BOARD
+		                                                        WHERE UPPER(MEMBER_ID) LIKE '%'||UPPER(#{keyword})||'%')
+					                                 														)
+					                           																	)
+					                     																			)
+					                     																				 
+	                </if>
+	                <if test="searchType == 'title'">
+		               	AND (UPPER(BOARD_TITLE)   LIKE '%'||UPPER(#{keyword})||'%'
+		               			OR (ORIGIN_BOARD IS NOT NULL AND BOARD_NUM IN 
+		                 				(SELECT BOARD_NUM
+		                 			     FROM BOARD
+		                 				 WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+		                                                         FROM BOARD
+		                                                         WHERE UPPER(BOARD_TITLE) LIKE '%'||UPPER(#{keyword})||'%')
+						                                  														)
+						                            																)
+						                      																			)
+						                      																				  
+	                </if>
+	                <if test="searchType == 'content'">
+	                        AND (UPPER(BOARD_CONTENT) LIKE '%'||UPPER(#{keyword})||'%'
+	                        		OR (ORIGIN_BOARD IS NOT NULL AND MEMBER_ID IN 
+	                        				(SELECT MEMBER_ID
+	                        			     FROM BOARD
+	                        				 WHERE ORIGIN_BOARD IN (SELECT BOARD_NUM
+	                                                                FROM BOARD
+	                                                                WHERE UPPER(BOARD_CONTENT) LIKE '%'||UPPER(#{keyword})||'%')
+					                                         														)
+					                                   																	)
+					                             																			)
+	                </if> 
+	                                                                                                     )
+	            START WITH ORIGIN_BOARD IS NULL
+	            CONNECT BY PRIOR BOARD_NUM = ORIGIN_BOARD
+	            ORDER SIBLINGS BY NVL2(ORIGIN_BOARD, '', BOARD_NUM) DESC)) 
+	            
+				)  
+				)
+	
+	</select>
+	
+	<select id="selectBoardKindList" resultMap="boardKind">
+		SELECT KIND_CODE
+			, KIND_NAME 
+		FROM BOARD_KIND
+	</select>
+	
+	<select id="selectMemberBoardKindList" resultMap="boardKind">
+		SELECT KIND_CODE
+			, KIND_NAME 
+		FROM BOARD_KIND
+		WHERE KIND_CODE = 2 OR KIND_CODE = 3
+	</select>
+	
+	<select id="selectBoardDetail" resultMap="board">
+		SELECT *
+		FROM BOARD B, BOARD_KIND K
+        WHERE B.KIND_OF_BOARD = K.KIND_CODE 
+        AND BOARD_NUM = #{boardNum}
+	</select>
+	
+	<update id="upViewCount">
+		UPDATE BOARD
+		SET
+		VIEW_COUNT = VIEW_COUNT+1
+		WHERE BOARD_NUM = #{boardNum}
+	</update>
+	
+	<select id="selectBoardKind" resultMap="boardKind">
+		SELECT * FROM BOARD_KIND WHERE KIND_CODE = #{kindCode}
+	</select>
+	
+	<select id="selectReply" resultMap="reply">
+		SELECT * FROM REPLY WHERE REPLY_BOARD_NUM = #{boardNum} ORDER BY REPLY_NUM 
+	</select>
+	
+	<insert id="insertReply">
+		INSERT INTO REPLY (
+			REPLY_NUM
+			, REPLY_BOARD_NUM
+			, REPLY_MEMBER_ID
+			, REPLY_CONTENT
+			, REPLY_IS_SECRET
+		) VALUES (
+			(SELECT NVL(MAX(REPLY_NUM)+1, 1) FROM REPLY)
+			, #{replyBoardNum}
+			, #{replyMemberId}
+			, #{replyContent}
+			, #{replyIsSecret}
+		)
+	</insert>
+	
+	
+	<insert id="insertBoard" parameterType="hashmap" useGeneratedKeys="true" keyProperty="BOARD_NUM">
+		<selectKey keyProperty="BOARD_NUM" resultType="int" order="BEFORE"> 
+			SELECT NVL(MAX(BOARD_NUM)+1, 1) AS BOARD_NUM FROM BOARD 
+		</selectKey> 
+		
+		INSERT INTO BOARD (
+			BOARD_NUM
+			, KIND_OF_BOARD
+			, BOARD_TITLE
+			, BOARD_CONTENT
+			, VIEW_COUNT
+			<if test="boardVO.originBoard != 0">
+			, ORIGIN_BOARD
+			</if>
+			, MEMBER_ID
+			, IS_SECRET
+		) VALUES (
+			#{BOARD_NUM}
+			, #{boardVO.kindOfBoard}
+			, #{boardVO.boardTitle}
+			, #{boardVO.boardContent}
+			, 0
+			<if test="boardVO.originBoard != 0">
+			, #{boardVO.originBoard}
+			</if>
+			, #{boardVO.memberId}
+			, #{boardVO.isSecret}
+		)
+		
+	</insert>
+	
+	<update id="updateBoard">
+		UPDATE BOARD
+		SET
+		BOARD_TITLE = #{boardTitle}
+		, BOARD_CONTENT = #{boardContent}
+		, KIND_OF_BOARD = #{kindOfBoard}
+		, IS_SECRET = #{isSecret}
+		WHERE BOARD_NUM = #{boardNum}
+	</update>
+	
+	
+	<select id="selectReplyBoard" resultType="String">
+		SELECT BOARD_NUM FROM BOARD WHERE ORIGIN_BOARD = #{originBoard}
+	</select>
+	
+	
+	<!-- 답글 삭제 -->
+	<delete id="deleteReplyBoard">
+		DELETE BOARD
+		WHERE ORIGIN_BOARD  
+		<foreach collection="deleteBoardNumList" item="deleteBoardNum" open="IN (" close=")" separator=",">
+		    #{deleteBoardNum}
+		</foreach>
+	</delete>
+	
+	<!-- 덧글 삭제 -->
+	<delete id="deleteBoardReply"> 
+		DELETE REPLY
+		WHERE REPLY_BOARD_NUM 
+		<foreach collection="deleteBoardNumList" item="deleteBoardNum" open="IN (" close=")" separator=",">
+		    #{deleteBoardNum}
+		</foreach>
+	</delete>
+	
+	<!-- 답글, 답글 덧글, 덧글 삭제후 게시글 삭제 -->
+	<delete id="deleteBoard">
+		DELETE BOARD
+		WHERE BOARD_NUM  
+		<foreach collection="deleteBoardNumList" item="deleteBoardNum" open="IN (" close=")" separator=",">
+		    #{deleteBoardNum}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteReply" parameterType="int">
+		DELETE REPLY
+		WHERE REPLY_NUM = #{replyNum}
+	</delete>
+	
+	<update id="updateReply">
+		UPDATE REPLY
+		SET
+		REPLY_CONTENT = #{replyContent}
+		WHERE REPLY_NUM = #{replyNum}
+	</update>
+	
+	<select id="selectReplyBoardList" resultType="int">
+		SELECT BOARD_NUM FROM  
+            (SELECT * 
+	            FROM BOARD 
+	            WHERE BOARD_NUM = #{boardNum}
+	            OR ORIGIN_BOARD = #{boardNum})
+        WHERE ORIGIN_BOARD IS NOT NULL
+	</select>
+	
+	<select id="getReplyBoardCnt" resultType="int">
+		SELECT COUNT(*) FROM 
+			(SELECT BOARD_NUM FROM  
+            	(SELECT * 
+	           		FROM BOARD 
+	            	WHERE BOARD_NUM = #{boardNum}
+	            	OR ORIGIN_BOARD = #{boardNum})
+        	WHERE ORIGIN_BOARD IS NOT NULL)
+	</select>
+	
+	<update id="updateBoardList" parameterType="hashmap">
+		UPDATE BOARD
+		SET
+		KIND_OF_BOARD = #{kindCode}
+		WHERE BOARD_NUM  
+		<foreach collection="boardNumList" item="boardNum" open="IN (" close=")" separator=",">
+		    #{boardNum}
+		</foreach>
+	</update>
+	
+	<insert id="insertFile">
+		INSERT INTO FILES (
+			FILE_NUM
+			, BOARD_NUM
+			, ORIGIN_FILE_NAME
+			, STORED_FILE_NAME
+			, FILE_SIZE
+		) VALUES (
+			(SELECT NVL(MAX(FILE_NUM)+1,1) FROM FILES)
+			, #{boardNum}
+			, #{originFileName}
+			, #{storedFileName}
+			, #{fileSize}
+		)
+		
+	</insert>
+	
+	<select id="selectBoardFileList" resultMap="file">
+		SELECT * FROM FILES
+        WHERE BOARD_NUM 
+		<foreach collection="deleteBoardNumList" item="boardNum" open="IN (" close=")" separator=",">
+		    #{boardNum}
+		</foreach>
+	
+	</select>
+	
+	<select id="selectBoardFile" parameterType="int" resultMap="file">
+		SELECT * FROM FILES
+        WHERE BOARD_NUM = #{boardNum}
+        ORDER BY FILE_NUM
+	</select>
+	
+	<select id="selectFile" parameterType="int" resultMap="file">
+		SELECT * FROM FILES
+        WHERE FILE_NUM = #{fileNum} 
+	</select>
+	
+	<!-- 게시판 삭제시 파일데이터 삭제 -->
+	<delete id="deleteBoardFile" parameterType="int">
+		DELETE FILES
+		WHERE BOARD_NUM  
+		<foreach collection="deleteBoardNumList" item="boardNum" open="IN (" close=")" separator=",">
+		    #{boardNum}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteFile">
+		DELETE FILES
+		WHERE FILE_NUM = #{fileNum}
+	</delete>
+	
+	
+	
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+

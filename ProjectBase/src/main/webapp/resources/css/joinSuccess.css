@@ -1,0 +1,15 @@
+@charset "UTF-8";
+.contentsTitle1 {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.contentsTitle2 {
+    height: 415px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+h1.contentsTitle{
+	line-height: 80px;
+	font-weight: bold;
+	text-align: center;
+}

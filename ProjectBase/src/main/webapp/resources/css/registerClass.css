@@ -1,0 +1,120 @@
+@charset "UTF-8";
+
+.classesName, .classDay, .classTime, .classLvTr, .classFee{
+	font-weight:lighter;
+	color: gray;
+}
+
+.textSpan{
+	font-weight:lighter;
+	color: gray;
+}
+
+.classesName:hover, .classDay:hover, .classTime:hover, .classLv:hover{
+	cursor: pointer;
+}
+.selectedName, .selectedDay, .selectedTime{
+	font-weight: bold;
+}
+.registeredTime, .fullClassLv{
+	font-weight: bold;
+	color: red;
+}
+
+.choiceAddr:hover, .pageNum:hover {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.contentsTitle1 {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.contentsTitle2 {
+    height: 100px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+h1.contentsTitle{
+	line-height: 80px;
+	font-weight: bold;
+	text-align: center;
+}
+
+table.regTable{
+	border-top: 3px solid #0034a9;
+	border-bottom: 1px solid #dddddd;
+}
+
+.title{
+	font-weight: bold;
+	text-align: center;
+	vertical-align: middle;
+	background-color: #F7F7F7;
+}
+
+table.regTable a{
+	text-decoration: none;
+	color: black;
+}
+
+table.regTable a:hover{
+	text-decoration: underline;
+	color: black;
+	cursor: pointer;
+}
+
+.contentDiv{
+	padding: 5px;
+	border-bottom: 1px dashed #ddd;
+}
+
+
+/* 스크롤바 */
+.one{
+  /* 스크롤바가 absolute로 들어가기 때문에
+     여기다가 relative를 준다 */
+  position:relative;
+}
+
+.two{
+  overflow-y:scroll;
+  padding: 0px;
+  /* 여기다가 padding값 입력하면 
+     스크롤바가 상자 밖으로 나감 */
+}
+
+.two::-webkit-scrollbar {
+  /* 스크롤바 너비 조절하는 부분 */
+  width: 10px; 
+}
+.two::-webkit-scrollbar,
+.two::-webkit-scrollbar-thumb {
+  overflow:visible;
+  border-radius: 4px;
+}
+.two::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,.2); 
+}
+
+.cover-bar{
+  width:10px;
+  height:100%;
+  position:absolute;
+  top:0;
+  right:0;
+  -webkit-transition: all .5s;
+  opacity: 1;
+  /* 배경색을 상자색과 똑같이 맞춰준다 */
+  background: white;
+}
+
+/* 중요한 부분 */
+.one:hover .cover-bar {
+   opacity: 0;
+  -webkit-transition: all .5s;
+}
+
+
+
+       

@@ -1,0 +1,179 @@
+@charset "UTF-8";
+
+.carousel{
+	z-index: 1;
+	position: relative;
+}
+
+.searchWindow{
+	z-index: 3;
+	position: relative;
+	margin-top: -300px;
+}
+
+button.searchBtn{
+	height: 39px;
+	width: 20%;
+	color:white;
+	font-size: 20px;
+	background-color: #0034a9;
+    border: 1px solid #0034a9;
+	box-sizing: border-box;
+}
+
+
+/* 웹폰트 : 에스코어드림Md체 */
+@font-face {
+	font-family: 'S-CoreDream-5Medium';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Reg체 */
+@font-face {
+	font-family: 'S-CoreDream-4Regular';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Lt체 */
+@font-face {
+	font-family: 'S-CoreDream-3Light';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.noticeList > li > div > div> a{
+	text-decoration: none;
+	color: black;
+    padding: 5px 5px;
+    width: 250px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    z-index: 4;
+}
+
+.conts_inner > li {
+    padding: 6px 8px 6px 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px dashed #e8e8e8;
+	position: relative;
+    z-index: 4;
+}
+
+.noticeList > li > div > div> a:hover{
+	text-decoration: underline;
+	color: black;
+	cursor: pointer;
+}
+
+img.plusBtn:hover{
+	cursor: pointer;
+}
+
+button img.searchBtn{
+	position: relative;
+	top: -1.5px;
+	z-index: 4;
+}
+
+@media (max-width: 991px) {
+	.searchBtn {
+	    width: 50px;
+	    height: 20px;
+	    position: relative;
+	    margin: 0 auto;
+	    font-size: 14px;
+	}
+}
+
+@media (max-width: 991px) {
+	.dateSpan {
+    	visibility: hidden;
+	}
+}
+
+.tab_box {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    position: relative;
+	z-index: 4;
+}
+
+
+#popup{
+	position: fixed !important;
+	z-index: 5;
+	height: 0px;
+	margin: 0px;
+	padding: 0px;
+	top: 18%;
+	bottom: 15%;
+	left: 2%;
+}
+
+@media (max-width: 992px) {
+	#popup {
+		position: fixed !important;
+    	top: 20%;
+    	margin-left: 20%;
+	}
+}
+
+.closePopup:hover{
+	cursor: pointer;
+}
+
+.todayClosePopup:hover{
+	cursor: pointer;
+}
+
+
+/* 버튼css */
+/* .loginBtn, .joinBtn{
+    height: 40px;
+    padding: 0 18px;
+    margin-right: 8px;
+    box-sizing: border-box;
+    font-size: 13px;
+    color: #35477D;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 3px;
+    cursor: pointer;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       

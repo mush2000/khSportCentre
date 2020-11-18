@@ -1,0 +1,90 @@
+@charset "UTF-8";
+table{
+	table-layout: fixed;
+	border-spacing: 0;
+}
+tr, td{
+	height: 1px;
+	border-spacing: 0;
+}
+
+.bottomMenuTr{
+	font-family:'S-CoreDream-3Light';
+	color: white;
+}
+
+.bottomMenuTr a{
+	color: white;
+	text-decoration: none;
+}
+
+.bottomMenuTr a:hover
+, .emailRejection:hover
+, .protectInfo:hover{
+	color: white;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.table1, .table2{
+	display: inline-block;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+}
+
+/* 웹폰트 : 에스코어드림Md체 */
+@font-face {
+	font-family: 'S-CoreDream-5Medium';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Reg체 */
+@font-face {
+	font-family: 'S-CoreDream-4Regular';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Lt체 */
+@font-face {
+	font-family: 'S-CoreDream-3Light';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       

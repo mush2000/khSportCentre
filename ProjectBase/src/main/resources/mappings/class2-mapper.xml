@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 맵퍼파일 생성 후 반드시 sql-map-config.xml 파일에 mapper 등록해줘야 함 -->
+<mapper namespace="class2Mapper">
+	<resultMap type="com.spring.biz.vo.ClassInfoVO" id="classInfo2">
+		<result column="CLASS_NUM"			property="classNum"/>
+		<result column="CLASSES_CODE"		property="classesCode"/>
+		<result column="CLASS_TIME"			property="classTime"/>
+		<result column="CLASS_LV"			property="classLv"/>
+		<result column="CLASS_DATE"			property="classDate"/>
+		<result column="LOC_CODE"			property="locCode"/>
+		<result column="INST_NUM"			property="instNum"/>
+		<result column="CLASS_STATUS"		property="classStatus"/>
+		<result column="REG_MEMBER_CNT"		property="regMemberCnt"/>
+		<result column="CLASS_DAY_CODE" 	property="classDayCode"/>
+		<result column="LEVEL_NAME"			property="levelName"/>
+		<result column="LEVEL_DETAIL"		property="levelDetail"/>
+		<result column="PLACE_NAME"			property="placeName"/>
+		<result column="MEMBER_NAME"		property="memberName"/>
+		<result column="MIN_MEMBER"			property="minMember"/>
+		<result column="MAX_MEMBER"			property="maxMember"/>
+		<result column="CLASSES_NAME"		property="classesName"/>
+		<result column="CLASSES_FEE"		property="classesFee"/>
+		<result column="CLASS_DAY"			property="classDay"/>
+		<result column="SURVEY_NUM"			property="surveyNum"/>
+		
+		<result column="MEMBER_ID"			property="memberId"/>
+		<result column="PLACE_CODE"			property="placeCode"/>
+		<result column="REG_CLASS_NUM"		property="regClassNum"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.ClassesVO" id="classes2">
+		<result column="CLASSES_CODE"		property="classesCode"/>
+		<result column="CLASSES_NAME"		property="classesName"/>
+		<result column="CLASSES_FEE"		property="classesFee"/>
+		<result column="CLASSES_DETAIL"		property="classesDetail"/>
+		<result column="MIN_MEMBER"			property="minMember"/>
+ 		<result column="MAX_MEMBER"			property="maxMember"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.ClassDayVO" id="classDay2">
+		<result column="CLASS_DAY_CODE"    property="classDayCode"/>
+		<result column="CLASS_DAY"    		property="classDay"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.ClassLevelVO" id="classLevel2">
+		<result column="LEVEL_CODE"    		property="levelCode"/>
+		<result column="CLASSES_CODE"    	property="classesCode"/>
+		<result column="LEVEL_NAME"    		property="levelName"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.ClassPlaceVO" id="classPlace2">
+		<result column="PLACE_CODE"			property="placeCode"/>
+		<result column="PLACE_NAME"    		property="placeName"/>
+	</resultMap>
+		
+	<resultMap type="com.spring.biz.vo.ClassListVO" id="classList2">
+		<result column="CLASS_LIST_NUM"    property="classListNum"/>
+		<result column="CLASS_NUM"    		property="classNum"/>
+		<result column="MEMBER_ID"			property="memberId"/>
+		<result column="REG_DATE"    		property="regDate"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.BoardVO" id="board2">
+		<result column="BOARD_NUM" 			property="boardNum"/>
+		<result column="KIND_OF_BOARD" 		property="kindOfBoard"/>
+		<result column="BOARD_TITLE" 		property="boardTitle"/>
+		<result column="BOARD_CONTENT"		property="boardContent"/>
+		<result column="VIEW_COUNT" 		property="viewCount"/>
+		<result column="ORIGIN_BOARD" 		property="originBoard"/>
+		<result column="CREATE_DATE"	 	property="createDate"/>
+		<result column="MEMBER_ID" 			property="memberId"/>
+		<result column="IS_SECRET"	 		property="isSecret"/>
+		<result column="KIND_CODE" 			property="kindCode"/>
+		<result column="KIND_NAME" 			property="kindName"/>
+	</resultMap>
+		
+	<resultMap type="com.spring.biz.vo.SurveyVO" id="survey">
+		<result column="SURVEY_NUM"			property="surveyNum"/>
+		<result column="CLASS_NUM"			property="classNum"/>
+		<result column="TEACHING_SKILL"		property="teachingSkill"/>
+		<result column="CLASS_PROGRESS"		property="classProgress"/>
+		<result column="INST_KINDNESS"		property="instKindness"/>
+		<result column="OPINION"			property="opinion"/>
+		<result column="MEMBER_ID"			property="memberId"/>
+		<result column="CLASSES_NAME"		property="classesName"/>
+		<result column="CLASS_TIME"			property="classTime"/>
+		<result column="CLASS_DATE"			property="classDate"/>
+		<result column="LEVEL_NAME"			property="levelName"/>
+	</resultMap>
+	
+	<!-- 전체 강좌 내용을 조회 -->
+	<select id="selectClassesList" resultMap="classes2">
+		SELECT CLASSES_CODE
+			, CLASSES_NAME
+			, CLASSES_FEE
+			, MIN_MEMBER
+			, MAX_MEMBER
+			, (SELECT FILE_NAME FROM CLASSES_PICTURE WHERE PIC_CODE = 
+				(SELECT MIN(PIC_CODE) FROM CLASSES_PICTURE WHERE CLASSES_CODE = CLASSES.CLASSES_CODE)) AS CLASSES_DETAIL
+		FROM CLASSES
+	</select>
+	
+	<select id="selectClassesNameList" resultMap="classes2">
+		SELECT CLASSES_CODE
+			, CLASSES_NAME
+		FROM CLASSES
+	</select>
+	
+	<!-- 강좌의 상세정보를 조회 -->
+	<select id="selectClassesDetail" resultMap="classes2">
+		SELECT CLASSES_CODE
+			, CLASSES_NAME
+			, CLASSES_FEE
+			, CLASSES_DETAIL
+			, MIN_MEMBER
+			, MAX_MEMBER
+		FROM CLASSES
+		WHERE CLASSES_CODE = #{classesCode}
+	</select>
+	
+	<!-- 강좌의 사진들을 조회 -->
+	<select id="selectClassesPicture" resultType="String">
+		SELECT FILE_NAME
+		FROM CLASSES_PICTURE
+		WHERE CLASSES_CODE = #{classesCode}
+	</select>
+	
+	<!-- <select id="selectClassList" resultMap="classInfo2">
+		SELECT CLASS_NUM
+			, CLASSES_CODE
+			, CLASS_TIME
+			, CLASS_LV
+			, LOC_CODE
+			, INST_NUM
+			, CLASS_STATUS
+			, REG_MEMBER_CNT
+			, CLASS_DAY_CODE
+		FROM CLASS_INFO
+		WHERE CLASSES_CODE = #{classesCode}
+	</select> -->
+	
+	<!-- 강습의 강습날을 선택하기 위해서 목록을 불러옴(월~금, 월수금, 화목) -->
+	<select id="selectClassDayList" resultMap="classDay2">
+		SELECT DISTINCT(I.CLASS_DAY_CODE)
+			, CLASS_DAY
+		FROM CLASS_INFO I, CLASS_DAY D
+		WHERE CLASSES_CODE = #{classesCode}
+		AND I.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		AND TO_NUMBER(TO_CHAR(CLASS_DATE, 'MM')) = TO_NUMBER(TO_CHAR(SYSDATE, 'MM')) + 1
+		ORDER BY CLASS_DAY
+	</select>
+	
+	<select id="selectClassTimeList" resultType="String">
+		SELECT DISTINCT(CLASS_TIME)
+		FROM CLASS_INFO
+		WHERE CLASSES_CODE = #{classesCode}
+		AND CLASS_DAY_CODE = #{classDayCode}
+		AND TO_NUMBER(TO_CHAR(CLASS_DATE, 'MM')) = TO_NUMBER(TO_CHAR(SYSDATE, 'MM')) + 1
+		ORDER BY TO_NUMBER(CLASS_TIME)
+	</select>
+	
+	<select id="selectMaxMinMember" resultMap="classes2">
+		SELECT MAX_MEMBER
+			, MIN_MEMBER
+			, CLASSES_FEE
+		FROM CLASSES
+		WHERE CLASSES_CODE = #{classesCode}
+	</select>
+	
+	<select id="selectClassLvList" resultMap="classInfo2">
+		SELECT  CLASS_NUM
+			, LEVEL_NAME
+			<!-- , LEVEL_DETAIL -->
+			, PLACE_NAME
+			, MEMBER_NAME
+			, REG_MEMBER_CNT
+		FROM CLASS_INFO C, CLASS_LEVEL, CLASS_PLACE, INSTRUCTOR_INFO I, MEMBER_INFO M
+		WHERE C.CLASSES_CODE = #{classesCode}
+		AND CLASS_DAY_CODE = #{classDayCode}
+		AND CLASS_TIME = #{classTime}
+		AND TO_NUMBER(TO_CHAR(CLASS_DATE, 'MM')) = TO_NUMBER(TO_CHAR(SYSDATE, 'MM')) + 1
+		AND CLASS_LV = LEVEL_CODE
+		AND LOC_CODE = PLACE_CODE
+		AND C.INST_NUM = I.INST_NUM
+		AND I.MEMBER_ID = M.MEMBER_ID
+		AND INST_DEL = 'N'
+		ORDER BY CLASS_LV
+	</select>
+	
+	
+	<select id="registerClass" resultMap="classInfo2">
+		SELECT CLASS_NUM
+			, CLASSES_NAME
+			, CLASSES_FEE
+			, CLASS_TIME
+			, TO_CHAR(CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(CLASS_DATE, 'MM') || '월' AS CLASS_DATE
+			, PLACE_NAME
+			, LEVEL_NAME
+			, CLASS_DAY
+			, MEMBER_NAME
+			, REG_MEMBER_CNT
+			, MAX_MEMBER
+			, MIN_MEMBER
+		FROM CLASS_INFO CI, CLASSES C, CLASS_LEVEL, CLASS_PLACE, INSTRUCTOR_INFO II, MEMBER_INFO MI, CLASS_DAY D
+		WHERE CLASS_NUM = #{classNum}
+		AND CI.CLASSES_CODE = C.CLASSES_CODE
+		AND CI.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		AND CLASS_LV = LEVEL_CODE
+		AND LOC_CODE = PLACE_CODE
+		AND CI.INST_NUM = II.INST_NUM
+		AND II.MEMBER_ID = MI.MEMBER_ID  
+	</select>
+	
+	<insert id="regsterClass">
+		INSERT INTO REGISTER_CLASS (
+			REG_CLASS_NUM
+			, CLASS_NUM
+			, MEMBER_ID
+		) VALUES (
+			(SELECT NVL(MAX(REG_CLASS_NUM)+1,1) FROM REGISTER_CLASS)
+			, #{classNum}
+			, #{memberId} 
+		)
+	</insert>
+	
+	<update id="updateRegCnt">
+		UPDATE CLASS_INFO SET 
+			REG_MEMBER_CNT = (SELECT COUNT(REG_CLASS_NUM) 
+							FROM REGISTER_CLASS 
+							WHERE CLASS_NUM = #{classNum})
+		WHERE CLASS_NUM = #{classNum}
+	</update>
+	
+	<!-- 현재 강습중이거나 다음달 신청한 강습을 조회 -->
+	<select id="regClassList" resultMap="classList2">
+		SELECT REG_CLASS_NUM AS CLASS_LIST_NUM
+			, CLASS_NUM
+			, TO_CHAR(REG_DATE, 'YYYY.MM.DD') AS REG_DATE
+		FROM REGISTER_CLASS
+		WHERE MEMBER_ID = #{memberId}
+		ORDER BY REG_CLASS_NUM
+	</select>
+	
+	<!-- 이전 수강정보를 조회 -->
+	<select id="selectClassList" resultMap="classList2">
+		SELECT CLASS_LIST_NUM
+			, CLASS_NUM
+		FROM CLASS_LIST
+		WHERE MEMBER_ID = #{memberId}
+		ORDER BY CLASS_LIST_NUM DESC
+	</select>
+	
+	<!-- 수강중인 반과 수강신청중인 반을 조회 -->
+	<select id="registerClassList" resultMap="classInfo2">
+		SELECT REG_CLASS_NUM
+			, CI.CLASS_NUM
+			, CLASSES_NAME
+			, CLASS_DAY
+			, CLASS_TIME
+			, TO_CHAR(CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(CLASS_DATE, 'MM') || '월' AS CLASS_DATE
+			, PLACE_NAME
+			, LEVEL_NAME
+			, MEMBER_NAME
+			, REG_MEMBER_CNT
+		FROM REGISTER_CLASS R,CLASS_INFO CI, CLASSES C, CLASS_LEVEL, CLASS_PLACE, INSTRUCTOR_INFO II, MEMBER_INFO MI, CLASS_DAY D
+		WHERE R.MEMBER_ID = #{memberId} 
+		AND R.CLASS_NUM = CI.CLASS_NUM
+		AND CI.CLASSES_CODE = C.CLASSES_CODE
+		AND CI.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		AND CLASS_LV = LEVEL_CODE
+		AND LOC_CODE = PLACE_CODE
+		AND CI.INST_NUM = II.INST_NUM
+		AND II.MEMBER_ID = MI.MEMBER_ID
+		ORDER BY REG_CLASS_NUM
+	</select>
+	
+	<select id="classNumOfRegClass" resultType="int">
+		SELECT CLASS_NUM
+		FROM REGISTER_CLASS
+		WHERE REG_CLASS_NUM = #{regClassNum}
+	</select>
+	
+	<delete id="deleteRegisterClass">
+		DELETE REGISTER_CLASS
+		WHERE REG_CLASS_NUM = #{regClassNum}
+	</delete>
+	
+	<select id="myClassList" resultMap="classInfo2">
+		SELECT CI.CLASS_NUM
+			, CLASSES_NAME
+			, CLASS_DAY
+			, CLASS_TIME
+			, TO_CHAR(CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(CLASS_DATE, 'MM') || '월' AS CLASS_DATE
+			, PLACE_NAME
+			, LEVEL_NAME
+			, MEMBER_NAME
+			, REG_MEMBER_CNT
+			, SURVEY_NUM
+		<!-- FROM CLASS_LIST L, CLASS_INFO CI, CLASSES C, CLASS_LEVEL, CLASS_PLACE, INSTRUCTOR_INFO II, MEMBER_INFO MI, CLASS_DAY D, SURVEY S -->
+		FROM CLASS_LIST L, CLASS_INFO CI, CLASSES C, CLASS_LEVEL, CLASS_PLACE, INSTRUCTOR_INFO II, MEMBER_INFO MI, CLASS_DAY D
+		WHERE L.MEMBER_ID = #{memberId} 
+		AND L.CLASS_NUM = CI.CLASS_NUM
+		AND CI.CLASSES_CODE = C.CLASSES_CODE
+		AND CI.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		AND CLASS_LV = LEVEL_CODE
+		AND LOC_CODE = PLACE_CODE
+		AND CI.INST_NUM = II.INST_NUM
+		AND II.MEMBER_ID = MI.MEMBER_ID
+		<!-- AND L.CLASS_NUM = S.CLASS_NUM(+) -->
+		ORDER BY CLASS_LIST_NUM DESC
+	</select>
+	
+	<select id="checkRegclass" resultMap="classInfo2">
+		SELECT CLASSES_NAME
+			, CLASS_DAY_CODE
+			, CLASS_TIME
+		FROM REGISTER_CLASS R,CLASS_INFO I, CLASSES C
+		WHERE R.MEMBER_ID = #{memberId} 
+		AND R.CLASS_NUM = I.CLASS_NUM
+		AND I.CLASSES_CODE = C.CLASSES_CODE
+		AND TO_CHAR(CLASS_DATE, 'YYYYMM') = TO_CHAR(SYSDATE, 'YYYYMM') + 1
+		ORDER BY REG_CLASS_NUM
+	</select>
+	
+	<!-- 회원의 게시판 작성 목록의 번호와 작성일을 조회 -->
+	<select id="myBoard" resultMap="board2">
+		SELECT BOARD_NUM
+			, TO_CHAR(CREATE_DATE,'YYYY.MM.DD') AS CREATE_DATE
+		FROM BOARD
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+	
+	<select id="myBoardList" resultMap="board2">
+		SELECT BOARD_NUM
+			, KIND_NAME
+			, BOARD_TITLE
+			, VIEW_COUNT
+			, ORIGIN_BOARD
+			, TO_CHAR(CREATE_DATE,'YYYY.MM.DD') AS CREATE_DATE
+			, KIND_CODE
+		FROM BOARD, BOARD_KIND
+		WHERE MEMBER_ID = #{memberId}
+		AND KIND_OF_BOARD = KIND_CODE
+		ORDER BY KIND_OF_BOARD, BOARD_NUM
+	</select>
+	
+	<insert id="insertSurvey">
+		INSERT INTO SURVEY (
+			SURVEY_NUM
+			, CLASS_NUM
+			, TEACHING_SKILL
+			, CLASS_PROGRESS
+			, INST_KINDNESS
+			, OPINION
+			, MEMBER_ID 
+		) VALUES (
+			(SELECT NVL(MAX(SURVEY_NUM)+1,1) FROM SURVEY)
+			, #{classNum}
+			, #{teachingSkill}
+			, #{classProgress}
+			, #{instKindness}
+			, #{opinion}
+			, #{memberId}
+		)
+	</insert>
+	
+	<update id="insertSurveyNum">
+		UPDATE CLASS_LIST SET
+			SURVEY_NUM = (SELECT MAX(SURVEY_NUM) FROM SURVEY)
+		WHERE MEMBER_ID = #{memberId}
+		AND #{memberId} = (SELECT MEMBER_ID FROM SURVEY WHERE SURVEY_NUM = (SELECT MAX(SURVEY_NUM) FROM SURVEY))
+        AND CLASS_NUM= #{classNum}
+	</update>
+	
+	<select id="selectSurvey" resultMap="survey">
+		SELECT TEACHING_SKILL
+			, CLASS_PROGRESS
+			, INST_KINDNESS
+			, OPINION
+		FROM SURVEY
+		WHERE SURVEY_NUM = #{surveyNum}
+	</select>
+	
+	<select id="surveyList" resultMap="survey">
+		SELECT TEACHING_SKILL
+			, CLASS_PROGRESS
+			, INST_KINDNESS
+			, OPINION
+			, CLASSES_NAME
+			, CLASS_TIME
+			, TO_CHAR(CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(CLASS_DATE, 'MM') || '월' AS CLASS_DATE
+			, LEVEL_NAME
+			, S.CLASS_NUM
+			, SURVEY_NUM
+		FROM SURVEY S, CLASS_INFO I, CLASSES C, CLASS_LEVEL
+		WHERE MEMBER_ID = #{memberId}
+		AND S.CLASS_NUM = I.CLASS_NUM
+		AND I.CLASSES_CODE = C.CLASSES_CODE
+		AND CLASS_LV = LEVEL_CODE	
+	</select>
+	
+	<!-- 강사인 경우 강사번호와 강습달을 조회 -->
+	<select id="selectInstClassList" resultMap="classInfo2">
+		SELECT CLASS_NUM
+			, TO_CHAR(CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(CLASS_DATE, 'MM') || '월' AS CLASS_DATE
+		FROM CLASS_INFO C, INSTRUCTOR_INFO I
+		WHERE MEMBER_ID = #{memberId}
+		AND C.INST_NUM = I.INST_NUM
+	</select>
+	
+	<select id="instClassInfoList" resultMap="classInfo2">
+		SELECT CLASS_NUM
+			, CLASSES_NAME
+			, CLASS_TIME
+			, LEVEL_NAME
+			, TO_CHAR(CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(CLASS_DATE, 'MM') || '월' AS CLASS_DATE
+			, REG_MEMBER_CNT
+			, CLASS_DAY
+		FROM CLASS_INFO CI, INSTRUCTOR_INFO II, CLASSES C, CLASS_LEVEL, CLASS_DAY D
+		WHERE MEMBER_ID = #{memberId}
+		AND CI.INST_NUM = II.INST_NUM
+		AND CI.CLASSES_CODE = C.CLASSES_CODE
+		AND CLASS_LV = LEVEL_CODE
+		AND CI.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		<!-- AND EXTRACT(YEAR FROM CLASS_DATE) &lt;= EXTRACT(YEAR FROM ADD_MONTHS(SYSDATE, -1))
+		AND EXTRACT(MONTH FROM CLASS_DATE) &lt;= EXTRACT(MONTH FROM ADD_MONTHS(SYSDATE, -1)) -->
+	</select>
+	
+	<!-- 강의관리 페이지에 출력할 이번달(다음달) 강습반을 조회 -->
+	<select id="selectClassInfoList2" resultMap="classInfo2">
+		SELECT *
+		FROM(
+		    SELECT ROW_NUMBER() OVER (ORDER BY I.CLASS_NUM) NUM
+		            , I.CLASS_NUM
+		            , I.CLASSES_CODE
+		            , I.CLASS_TIME 
+		            , I.CLASS_LV
+		            , I.LOC_CODE
+		            , I.INST_NUM
+		            , I.REG_MEMBER_CNT
+		            , TO_CHAR(I.CLASS_DATE, 'YYYY-MM-DD') AS CLASS_DATE
+		            , C.CLASSES_NAME
+		            , D.CLASS_DAY_CODE
+		            , D.CLASS_DAY
+		            , L.LEVEL_NAME
+		            , L.LEVEL_DETAIL
+		            , P.PLACE_CODE
+		            , P.PLACE_NAME
+		            , INST.MEMBER_ID
+		            , M.MEMBER_NAME
+		            FROM CLASS_INFO I, CLASSES C, CLASS_DAY D, CLASS_LEVEL L, CLASS_PLACE P, INSTRUCTOR_INFO INST, MEMBER_INFO M
+		            WHERE I.CLASSES_CODE = C.CLASSES_CODE
+		            AND I.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		            AND I.CLASS_LV = L.LEVEL_CODE
+		            AND I.LOC_CODE = P.PLACE_CODE
+		            AND I.INST_NUM = INST.INST_NUM
+		            AND INST.MEMBER_ID = M.MEMBER_ID
+		            AND C.CLASSES_CODE = #{classInfoVO.classesCode}
+                    AND TO_CHAR(CLASS_DATE, 'YYYYMM') = #{classInfoVO.classDate}
+                    AND CLASS_TIME = #{classInfoVO.classTime}
+		            ORDER BY CLASS_NUM
+		     ) 
+		WHERE NUM BETWEEN #{pagination.startList} AND #{pagination.listSize}
+	</select>
+	
+	<!-- 강의관리 페이지에 출력할 다음달 강습반 중 현재 신청한 수강생이 있는 반을 조회 -->
+	<select id="selectClassInfoListStudent" resultType="int">
+	    SELECT DISTINCT(R.CLASS_NUM)
+        FROM REGISTER_CLASS R, CLASS_INFO I
+        WHERE R.CLASS_NUM = I.CLASS_NUM
+        AND CLASSES_CODE = #{classesCode}
+		AND TO_CHAR(CLASS_DATE, 'YYYYMM') = #{classDate}
+		AND CLASS_TIME = #{classTime}
+		ORDER BY CLASS_NUM
+	</select>
+	
+	<!-- 페이지작업을 위해서 이번달(다음달)전체 강습반 개수를 가져옴 -->
+	<select id="selectClassesCnt" resultType="int">
+		SELECT COUNT(CLASS_NUM)
+		FROM CLASS_INFO
+		WHERE CLASSES_CODE = #{classesCode}
+		AND TO_CHAR(CLASS_DATE, 'YYYYMM') = #{classDate}
+		AND CLASS_TIME = #{classTime}
+	</select>
+	
+	<!-- 다음달 헬쓰가 개설됐는지 확인 -->
+	<select id="selectNextHealthClassExist" resultType="int">
+		SELECT COUNT(CLASS_NUM)
+		FROM CLASS_INFO
+		WHERE CLASSES_CODE = 61
+		AND TO_CHAR(CLASS_DATE, 'YYYYMM') = #{classDate}
+	</select>
+
+	<!-- 다음달에 강습을 추가 -->
+	<insert id="insertNextMonthClass">
+		INSERT INTO CLASS_INFO 
+		SELECT (SELECT NVL(MAX(CLASS_NUM) + 1,1) FROM CLASS_INFO)
+			, CLASSES_CODE
+			, CLASS_TIME
+			, CLASS_LV
+			, ADD_MONTHS(CLASS_DATE, 1)
+			, LOC_CODE
+			, INST_NUM
+			, 0
+			, CLASS_DAY_CODE
+			FROM CLASS_INFO
+			WHERE CLASS_NUM = #{classNum}
+	</insert>
+
+	<!-- 다음달에 강습을 여러개 동시에 추가 -->
+	<insert id="insertNextMonthClassList">
+		INSERT INTO CLASS_INFO
+		<foreach collection="rentalCodeList" item="cNum" index="idx" separator=" UNION ALL ">
+			SELECT (SELECT NVL(MAX(CLASS_NUM) + 1 + #{idx},1) FROM CLASS_INFO)
+				, CLASSES_CODE
+				, CLASS_TIME
+				, CLASS_LV
+				, ADD_MONTHS(CLASS_DATE, 1)
+				, LOC_CODE
+				, INST_NUM
+				, 0
+				, CLASS_DAY_CODE
+				FROM CLASS_INFO
+				WHERE CLASS_NUM = #{cNum}
+		</foreach>
+	</insert>
+
+	<!-- 다음달에 새로운강습을 개설 -->
+	<insert id="insertNewNextMonthClass">
+		INSERT INTO CLASS_INFO 
+		VALUES ((SELECT NVL(MAX(CLASS_NUM) + 1,1) FROM CLASS_INFO)
+			, #{classesCode}
+			, #{classTime}
+			, #{classLv}
+			, #{classDate}
+			, #{placeCode}
+			, #{instNum}
+			, 0
+			, #{classDayCode} )
+	</insert>
+	
+	<!-- 다음달에 개설된 강습을 삭제 -->
+	<delete id="deleteNextMonthClass">
+		DELETE CLASS_INFO
+		WHERE CLASS_NUM = #{classNum}
+	</delete>
+	
+	<!-- 다음달에 개설된 강습을 여러개 동시에 삭제 -->
+	<delete id="deleteNextMonthClassList">
+		DELETE CLASS_INFO
+		WHERE 1 = 0
+		<foreach collection="rentalCodeList" item="cNum">
+			OR CLASS_NUM = #{cNum}
+		</foreach>
+	</delete>
+	
+	<!-- 강습관리 페이지에서 해당 종목의 강습수준 리스트를 조회 -->
+	<select id="selectClassLevelList" resultMap="classLevel2">
+		SELECT LEVEL_CODE
+			, L.CLASSES_CODE
+			, LEVEL_NAME
+		FROM CLASS_LEVEL L, CLASSES C
+		WHERE C.CLASSES_CODE = #{classesCode}
+		AND TOTAL_STEP = L.CLASSES_CODE
+	</select>
+	
+	<!-- 강습관리 페이지에서 해당 종목의 장소 이름을 조회 -->
+	<select id="selectRegClassPlaceList" resultMap="classPlace2">
+		SELECT PLACE_CODE
+			, PLACE_NAME
+		FROM CLASS_PLACE, CLASSES
+		WHERE CLASSES_CODE = #{classesCode}
+		AND SUBSTR(CLASSES_CODE,1,1) = FRONT_PLACE_CODE
+	</select>
+	
+	<!-- 강습관리 페이지에서 해당 종목이 매일 하는지 격일로 하는지 조회 -->
+	<select id="selectRegClassDayList" resultMap="classDay2">
+		SELECT CLASS_DAY_CODE
+			, CLASS_DAY
+		FROM CLASS_DAY, CLASSES
+		WHERE CLASSES_CODE = #{classesCode}
+		AND SUBSTR(CLASS_DAY_CODE,1,1) = FRONT_DAY_CODE
+	</select>
+	
+	
+	<select id="pastClassSurveyScore" resultMap="survey">
+		SELECT AVG(TEACHING_SKILL)*100 AS TEACHING_SKILL
+			, AVG(CLASS_PROGRESS)*100 AS CLASS_PROGRESS
+			, AVG(INST_KINDNESS)*100 AS INST_KINDNESS
+			FROM SURVEY 
+			WHERE CLASS_NUM = #{classNum}
+	</select>
+	
+	<select id="pastClassSurveyOpinion" resultMap="survey">
+		SELECT OPINION 
+		FROM SURVEY 
+		WHERE CLASS_NUM =#{classNum} 
+	</select>
+	
+	<!-- 강의관리시 오래된 REGISTER_CLASS 데이터가 있는지 확인 -->
+	<select id="oldRegisterClassNum" resultType="int">
+		SELECT REG_CLASS_NUM
+		FROM CLASS_INFO C, REGISTER_CLASS R
+		WHERE C.CLASS_NUM = R.CLASS_NUM
+		AND TO_CHAR(SYSDATE,'YYYYMM') > TO_CHAR(CLASS_DATE,'YYYYMM')
+	</select>
+	
+	<!-- 오래된 REGISTER_CLASS를 CLASS_LIST로 복사 -->
+	<insert id="copyOldRegisterClassToClassList">
+		INSERT INTO CLASS_LIST (
+			CLASS_LIST_NUM
+			, CLASS_NUM
+			, MEMBER_ID
+		)
+		<foreach collection="list" item="vo" index="idx" separator=" UNION ALL ">
+			SELECT (SELECT NVL(MAX(CLASS_LIST_NUM) + 1 + #{idx},1) FROM CLASS_LIST)
+				, CLASS_NUM
+				, MEMBER_ID
+				FROM REGISTER_CLASS
+				WHERE REG_CLASS_NUM = #{vo.classListNum}
+		</foreach>
+	</insert>
+	
+	<!-- 오래된 REGISTER_CLASS를 삭제 -->
+	<delete id="deleteOldRegisterClass">
+		DELETE REGISTER_CLASS
+		WHERE REG_CLASS_NUM
+		IN 
+		<foreach collection="list" item="vo" open="(" close=")" separator=",">
+			#{vo.classListNum}
+		</foreach>
+	</delete>
+	
+	<!-- 수강신청 종료후 인원 미달인 반이 있는지 확인 -->
+	<select id="lackOfRegMemberClassCnt" resultType="int">
+		SELECT COUNT(CLASS_NUM)
+		FROM CLASS_INFO I, CLASSES C
+		WHERE I.CLASSES_CODE = C.CLASSES_CODE
+		AND REG_MEMBER_CNT &gt;= 0
+		AND REG_MEMBER_CNT &lt; MIN_MEMBER
+	</select>
+	
+	<!-- 수강신청 종료후 인원 미달인 반을 폐강 -->
+	<update id="cancelLackOfRegMemberClass">
+		UPDATE CLASS_INFO
+		SET REG_MEMBER_CNT = -1
+		WHERE REG_MEMBER_CNT &gt;= 0
+		AND REG_MEMBER_CNT &lt; (SELECT MIN_MEMBER FROM CLASSES WHERE CLASSES_CODE = CLASS_INFO.CLASSES_CODE)
+	</update>
+	
+	<!-- 폐강된 반을 공지하기 위해서 목록을 불러옴 -->
+	<select id="lackOfRegMemberClassList" resultMap="classInfo2">
+		SELECT CLASSES_NAME
+			, CLASS_TIME
+			, PLACE_NAME
+			, LEVEL_NAME
+			, MEMBER_NAME
+		FROM CLASS_INFO I, CLASSES C, CLASS_LEVEL, CLASS_PLACE, INSTRUCTOR_INFO II, MEMBER_INFO M
+		WHERE I.CLASSES_CODE = C.CLASSES_CODE
+		AND CLASS_LV = LEVEL_CODE
+		AND LOC_CODE = PLACE_CODE
+		AND I.INST_NUM = II.INST_NUM
+		AND II.MEMBER_ID = M.MEMBER_ID
+		AND REG_MEMBER_CNT = -1
+	</select>
+	
+	<!-- 지난달에 폐강된 반이 있는지 조회 -->
+	<select id="lastMonthLackOfRegMemberClassCnt" resultType="int">
+		SELECT COUNT(CLASS_NUM)
+		FROM CLASS_INFO
+		WHERE REG_MEMBER_CNT = -1
+	</select>
+	
+	<!-- 지난달 폐강된 방에 신청한 정보를 삭제 -->
+	<delete id="deleteLackOfRegMemberRegisterClass">
+		 DELETE REGISTER_CLASS
+		 WHERE CLASS_NUM IN (SELECT CLASS_NUM FROM CLASS_INFO WHERE REG_MEMBER_CNT = -1)
+	</delete>
+
+	<!-- 지난달에 폐강된 반을 삭제 -->
+	<delete id="deleteLackOfRegMemberClass">
+		 DELETE CLASS_INFO
+		 WHERE REG_MEMBER_CNT = -1
+	</delete>
+</mapper>

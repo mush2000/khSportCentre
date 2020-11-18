@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 맵퍼파일 생성 후 반드시 sql-map-config.xml 파일에 mapper 등록해줘야 함 -->
+<mapper namespace="adminMapper">
+	
+	<!-- <update id="updateMemberInfo">
+		UPDATE MEMBER_INFO
+		SET
+	 	MEMBER_ADDR = #{memberAddr}
+		, MEMBER_TEL = #{memberTel}
+		, MEMBER_TEL2 = #{memberTel2}
+		, MEMBER_EMAIL = #{memberEmail}
+		WHERE MEMBER_ID = #{memberId}
+	</update> -->	
+	
+	<!-- <select id="getListCnt" parameterType="String" resultType="int">
+		SELECT COUNT(*) AS LIST_CNT
+		FROM ${value}
+	</select> -->
+	
+	<!-- 해당테이블(회원)의 개수를 조회 -->
+	<select id="getListCntMap" parameterType="hashMap" resultType="int">
+ 		SELECT COUNT(*) AS LIST_CNT
+		FROM ${table}
+		WHERE 1 = 1
+		<if test="delYn != null">
+			AND DEL_YN = #{delYn}
+		</if>
+		<if test="idKeyword != null">
+			AND (UPPER(MEMBER_ID) LIKE UPPER('%'||#{idKeyword}||'%')
+			OR UPPER(MEMBER_NAME) LIKE UPPER('%'||#{nameKeyword}||'%'))
+		</if>
+	</select>
+	
+	
+	<!-- 삭제여부, 키워드를 이용해서 회원을 조회 -->
+	<select id="selectMemberInfoList2" parameterType="hashMap" resultMap="memberMapper.member">
+		SELECT * 
+		FROM (SELECT ROW_NUMBER() OVER (ORDER BY MEMBER_ID) NUM 
+		    , MEMBER_ID
+		    , MEMBER_NAME
+		    , MEMBER_GENDER
+		    , TO_CHAR(MEMBER_BIRTHDAY, 'YYYY.MM.DD') AS MEMBER_BIRTHDAY
+		    , MEMBER_ADDR
+		    , MEMBER_TEL
+		    , MEMBER_TEL2
+		    , MEMBER_EMAIL
+		    , TO_CHAR(JOIN_DATE, 'YYYY.MM.DD') AS JOIN_DATE
+		    , DEL_YN
+		    FROM MEMBER_INFO
+		    WHERE 1 = 1 
+		    <if test="delYn != null">
+		    	AND DEL_YN = #{delYn} 
+		    </if>
+		    <if test="idKeyword != null">
+				AND (UPPER(MEMBER_ID) LIKE UPPER('%'||#{idKeyword}||'%')
+				OR UPPER(MEMBER_NAME) LIKE UPPER('%'||#{nameKeyword}||'%'))
+			</if>
+		    ORDER BY MEMBER_ID
+		    )
+		WHERE NUM BETWEEN #{pagination.startList} AND #{pagination.listSize}
+	</select>
+	
+	
+</mapper>

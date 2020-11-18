@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 맵퍼파일 생성 후 반드시 sql-map-config.xml 파일에 mapper 등록해줘야 함 -->
+<mapper namespace="memberMapper">
+	<resultMap type="com.spring.biz.vo.MemberVO" id="member">
+		<result column="MEMBER_ID"			property="memberId" />
+		<result column="MEMBER_NAME"		property="memberName" />
+		<result column="MEMBER_PW"			property="memberPw" />
+		<result column="WRONG_PW_CNT"		property="wrongPwCnt" />
+		<result column="MEMBER_GENDER"		property="memberGender" />
+		<result column="MEMBER_BIRTHDAY"	property="memberBirthday" />
+		<result column="MEMBER_ADDR"		property="memberAddr" />
+		<result column="MEMBER_EMAIL"		property="memberEmail" />
+		<result column="MEMBER_TEL"			property="memberTel" />
+		<result column="MEMBER_TEL2"		property="memberTel2" />
+		<result column="JOIN_DATE"			property="joinDate" />
+		<result column="DEL_YN"				property="delYn" />
+	</resultMap>
+
+	<resultMap type="com.spring.biz.vo.LoginInfoVO" id="login">
+		<result column="MEMBER_ID"			property="memberId" />
+		<result column="MEMBER_NAME"		property="memberName" />
+		<!-- <result column="STU_NUM" property="stuNum"/> -->
+		<result column="INST_NUM"			property="instNum" />
+		<result column="WRONG_PW_CNT"		property="wrongPwCnt" />
+	</resultMap>
+
+	<resultMap type="com.spring.biz.vo.InstructorInfoVO" id="instructor">
+		<result column="INST_NUM"			property="instNum" />
+		<result column="MEMBER_ID"			property="memberId" />
+		<result column="MEMBER_NAME"		property="memberName" />
+		<result column="MEMBER_GENDER"		property="memberGender" />
+		<result column="REG_NUM"			property="regNum" />
+		<result column="CAREER"				property="career" />
+		<result column="LICENSE"			property="license" />
+		<result column="MEMBER_TEL"			property="memberTel" />
+		<result column="PICTURE"			property="picture" />
+		<result column="CLASSES_CODE"		property="classesCode" />
+		<result column="CLASSES_NAME"		property="classesName" />
+		<result column="INST_DEL"			property="instDel" />
+	</resultMap>
+
+	<resultMap type="com.spring.biz.vo.RentalPlaceVO" id="rentalPlace2">
+		<result column="RENTAL_CODE"			property="rentalCode" />
+		<!-- <result column="RENTAL_PLACE_CODE" property="rentalPlaceCode"/> -->
+		<result column="RENTAL_DATE"			property="rentalDate" />
+		<result column="RENTAL_TIME"			property="rentalTime" />
+		<result column="PLACE_NAME"				property="placeName" />
+		<result column="RENTAL_MEMBER_ID"		property="rentalMemberId" />
+		<result column="RENTAL_MEMBER_NAME"		property="rentalMemberName" />
+		<result column="RENTAL_APPROVAL_YN"		property="rentalApprovalYN" />
+	</resultMap>
+
+	<!-- 입력받은 정보로 새로운 회원 정보를 저장 -->
+	<insert id="insertMember">
+		INSERT INTO MEMBER_INFO (
+			MEMBER_ID
+			, MEMBER_NAME
+			, MEMBER_PW
+			, MEMBER_GENDER
+			, MEMBER_BIRTHDAY
+			, MEMBER_ADDR
+			, MEMBER_EMAIL
+			, MEMBER_TEL
+			, MEMBER_TEL2
+		)
+		VALUES (
+			#{memberId}
+			, #{memberName}
+			, #{memberPw}
+			, #{memberGender}
+			, #{memberBirthday}
+			, #{memberAddr}
+			, #{memberEmail}
+			, #{memberTel}
+			, #{memberTel2}
+		)
+	</insert>
+
+	<select id="checkId" resultType="String">
+		SELECT MEMBER_ID
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<select id="checkDelYn" resultType="String">
+		SELECT DEL_YN
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- 로그인시 비밀번호 틀린회수를 조회 -->
+	<select id="checkWrongPwCnt" resultType="int">
+		SELECT WRONG_PW_CNT
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- 로그인시 입력받은 정보로 ID, 이름, 비밀번호 틀린 회수를 조회 -->
+	<select id="loginMemberInfo" resultMap="login">
+		SELECT MEMBER_ID
+			, MEMBER_NAME
+			, WRONG_PW_CNT
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+		AND MEMBER_PW = #{memberPw}
+		AND DEL_YN = 'N'
+	</select>
+
+	<!-- 로그인 회원이 강사이면 강사번호를 조회 -->
+	<select id="loginInstructorInfo" resultMap="login">
+		SELECT INST_NUM
+		FROM INSTRUCTOR_INFO
+		WHERE MEMBER_ID = #{memberId}
+		AND INST_DEL = 'N'
+	</select>
+
+	<!-- 로그인 때 비번이 틀리면 비번틀린 회수를 1증가 -->
+	<update id="wrongPw">
+		UPDATE MEMBER_INFO
+		SET WRONG_PW_CNT = WRONG_PW_CNT + 1
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<!-- 로그인 되면 비밀번호 틀린회수를 0으로 초기화 -->
+	<update id="setWrongPwCntZero">
+		UPDATE MEMBER_INFO
+		SET WRONG_PW_CNT = 0
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<!-- 비밀번호를 찾기위해 입력한정보가 맞는지 확인하여 맞으면 ID값을 넘겨줌 -->
+	<select id="searchPw" resultType="String">
+		SELECT MEMBER_ID
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+		AND MEMBER_NAME = #{memberName}
+		AND MEMBER_EMAIL = #{memberEmail}
+	</select>
+
+	<!-- 비밀번호 찾기를 통해 새로 만든 비밀번호를 저장 -->
+	<update id="newPw">
+		UPDATE MEMBER_INFO
+		SET MEMBER_PW = #{memberPw}
+			, WRONG_PW_CNT = 0
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<update id="changePw">
+		UPDATE MEMBER_INFO
+		SET MEMBER_PW = #{memberNewPw}
+		WHERE MEMBER_ID = #{memberId}
+		AND MEMBER_PW = #{memberPw}
+	</update>
+
+	<update id="changeAddr">
+		UPDATE MEMBER_INFO
+		SET MEMBER_ADDR = #{memberAddr}
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<update id="changeTel">
+		UPDATE MEMBER_INFO
+		SET MEMBER_TEL = #{memberTel}
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<update id="changeTel2">
+		UPDATE MEMBER_INFO
+		SET MEMBER_TEL2 = #{memberTel2}
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<update id="changeEmail">
+		UPDATE MEMBER_INFO
+		SET MEMBER_EMAIL = #{memberEmail}
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<select id="searchId" resultType="String">
+		SELECT MEMBER_ID
+		FROM MEMBER_INFO
+		WHERE MEMBER_NAME = #{memberName}
+		AND MEMBER_EMAIL = #{memberEmail}
+	</select>
+
+	<!-- 내정보관리에서 회원의 정보를 조회 -->
+	<select id="memberInfo" resultMap="member">
+		SELECT MEMBER_ID
+			, MEMBER_NAME
+			, MEMBER_GENDER
+			, MEMBER_ADDR
+			, TO_CHAR(MEMBER_BIRTHDAY, 'YYYY') || '년 ' || TO_CHAR(MEMBER_BIRTHDAY, 'MM') || '월 ' || TO_CHAR(MEMBER_BIRTHDAY, 'DD') || '일' AS MEMBER_BIRTHDAY
+			, MEMBER_TEL
+			, MEMBER_TEL2
+			, MEMBER_EMAIL
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- 회원 상세 정보를 조회 -->
+	<select id="memberInfoByAdmin" resultMap="member">
+		SELECT MEMBER_ID
+			, MEMBER_NAME
+			, MEMBER_GENDER
+			, MEMBER_ADDR
+			, TO_CHAR(MEMBER_BIRTHDAY, 'YYYY') || '년 ' || TO_CHAR(MEMBER_BIRTHDAY, 'MM') || '월 ' || TO_CHAR(MEMBER_BIRTHDAY, 'DD') || '일' AS MEMBER_BIRTHDAY
+			, MEMBER_TEL
+			, MEMBER_TEL2
+			, MEMBER_EMAIL
+			, TO_CHAR(JOIN_DATE, 'YYYY') || '년 ' || TO_CHAR(JOIN_DATE, 'MM') || '월 ' || TO_CHAR(JOIN_DATE, 'DD') || '일' AS JOIN_DATE
+			, NOTE
+		FROM MEMBER_INFO
+		WHERE MEMBER_ID = #{memberId}
+	</select>
+
+	<!-- 해당 종목의 강사 목록을 조회 -->
+	<select id="instInfo" resultMap="instructor">
+		SELECT I.MEMBER_ID
+			, MEMBER_NAME
+			, MEMBER_GENDER
+			, CAREER
+			, LICENSE
+			, PICTURE
+			, CLASSES_NAME
+		FROM INSTRUCTOR_INFO I, MEMBER_INFO M, CLASSES C
+		WHERE I.CLASSES_CODE = #{classesCode}
+		AND I.MEMBER_ID = M.MEMBER_ID
+		AND I.CLASSES_CODE = C.CLASSES_CODE
+		AND INST_DEL = 'N'
+		ORDER BY INST_NUM
+	</select>
+
+	<!-- 전체 강사정보를 조회 -->
+	<select id="instList" resultMap="instructor">
+		SELECT I.MEMBER_ID
+			, MEMBER_NAME
+			, MEMBER_GENDER
+			, CAREER
+			, LICENSE
+			, PICTURE
+			, CLASSES_NAME
+		FROM INSTRUCTOR_INFO I, MEMBER_INFO M, CLASSES C
+		WHERE I.MEMBER_ID = M.MEMBER_ID
+		AND I.CLASSES_CODE = C.CLASSES_CODE
+		AND INST_DEL = 'N'
+		ORDER BY MEMBER_ID
+	</select>
+
+	<!-- 회원이 강사면 강사상세정보를 조회 -->
+	<select id="instDetail" resultMap="instructor">
+		SELECT CAREER
+			, LICENSE
+			, PICTURE
+			, CLASSES_NAME
+			, INST_DEL
+		FROM INSTRUCTOR_INFO I, CLASSES C
+		WHERE MEMBER_ID = #{memberId}
+		AND INST_DEL = 'N'
+		AND I.CLASSES_CODE = C.CLASSES_CODE
+	</select>
+	
+	
+	<!-- 회원이 강사면 강사상세정보를 조회 -->
+	<select id="instDetailByAdmin" resultMap="instructor">
+		SELECT INST_NUM
+			, REG_NUM
+			, CAREER
+			, LICENSE
+			, PICTURE
+			, CLASSES_NAME
+		FROM INSTRUCTOR_INFO I, CLASSES C
+		WHERE MEMBER_ID = #{memberId}
+		AND I.CLASSES_CODE = C.CLASSES_CODE
+	</select>
+
+	<update id="withdrawMember">
+		UPDATE MEMBER_INFO
+		SET DEL_YN = 'Y'
+		WHERE MEMBER_ID = #{memberId}
+		AND MEMBER_PW = #{memberPw}
+	</update>
+
+	<!-- 관리자가 회원을 탈퇴시킴 -->
+	<update id="withdrawMemberByAdmin">
+		UPDATE MEMBER_INFO
+		SET DEL_YN = 'Y'
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<!-- 관리자가 탈퇴된 회원을 복구함 -->
+	<update id="restoreMemberByAdmin">
+		UPDATE MEMBER_INFO
+		SET DEL_YN = 'N'
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+
+	<update id="updateNote">
+		UPDATE MEMBER_INFO
+		SET NOTE = #{note}
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+	
+	<!-- 회원의 대관 정보를 조회 -->
+	<select id="selectMyRentalPlaceInfo" resultMap="rentalPlace2">
+		SELECT RENTAL_CODE
+			, PLACE_NAME
+			, TO_CHAR(RENTAL_DATE, 'YYYY.MM.DD') AS RENTAL_DATE
+			, RENTAL_TIME
+			, RENTAL_APPROVAL_YN
+		FROM RENTAL_PLACE, CLASS_PLACE
+		WHERE RENTAL_MEMBER_ID = #{memberId}
+		AND RENTAL_PLACE_CODE = PLACE_CODE
+	</select>
+
+	<select id="pastMyRentalPlaceInfo" resultMap="rentalPlace2">
+		SELECT RENTAL_CODE
+			, PLACE_NAME
+			, TO_CHAR(RENTAL_DATE, 'YYYY.MM.DD') AS RENTAL_DATE
+			, RENTAL_TIME
+			, RENTAL_APPROVAL_YN
+		FROM RENTAL_PLACE, CLASS_PLACE
+		WHERE RENTAL_MEMBER_ID = #{memberId}
+		AND RENTAL_DATE &lt; SYSDATE
+		AND RENTAL_PLACE_CODE = PLACE_CODE
+	</select>
+	
+	<!-- 강사관리에서 페이지작업을 위해 강사수를 조회 -->
+	<select id="selectInstCnt" parameterType="hashMap" resultType="int">
+		SELECT COUNT(I.MEMBER_ID)
+		FROM INSTRUCTOR_INFO I, MEMBER_INFO M
+		WHERE I.MEMBER_ID = M.MEMBER_ID
+		AND DEL_YN = 'N'
+		AND INST_DEL = #{instDel}
+		<if test="idKeyword != null">
+			AND (UPPER(I.MEMBER_ID) LIKE UPPER('%'||#{idKeyword}||'%')
+			OR UPPER(MEMBER_NAME) LIKE UPPER('%'||#{nameKeyword}||'%'))
+		</if>
+	</select>
+	
+	<!-- 강사관리에서 강사목록을 조회 -->
+	<select id="selectInstInfoByAdmin" parameterType="hashMap" resultMap="instructor">
+		SELECT * 
+		FROM (SELECT ROW_NUMBER() OVER (ORDER BY INST_NUM) NUM
+		    , INST_NUM
+		    , I.MEMBER_ID
+		    , MEMBER_NAME
+		    , MEMBER_GENDER
+		    , REG_NUM
+		    , CAREER
+		    , LICENSE
+		    , MEMBER_TEL
+		    , CLASSES_NAME
+		    , INST_DEL
+		    FROM INSTRUCTOR_INFO I, MEMBER_INFO M, CLASSES C
+		    WHERE I.MEMBER_ID = M.MEMBER_ID
+		    AND I.CLASSES_CODE = C.CLASSES_CODE
+		    AND DEL_YN = 'N'
+		    AND INST_DEL = #{instDel}
+		    <if test="idKeyword != null">
+				AND (UPPER(I.MEMBER_ID) LIKE UPPER('%'||#{idKeyword}||'%')
+				OR UPPER(MEMBER_NAME) LIKE UPPER('%'||#{nameKeyword}||'%'))
+			</if>
+		    ORDER BY INST_NUM
+		    )
+		WHERE NUM BETWEEN #{pagination.startList} AND #{pagination.listSize}
+<!-- 		SELECT * 
+		FROM (SELECT ROW_NUMBER() OVER (ORDER BY MEMBER_ID) NUM
+		    , MEMBER_ID
+		    , MEMBER_NAME
+		    , MEMBER_GENDER
+		    , TO_CHAR(MEMBER_BIRTHDAY, 'YYYY.MM.DD') AS MEMBER_BIRTHDAY
+		    , MEMBER_ADDR
+		    , MEMBER_TEL
+		    , MEMBER_TEL2
+		    , MEMBER_EMAIL
+		    , TO_CHAR(JOIN_DATE, 'YYYY.MM.DD') AS JOIN_DATE
+		    FROM MEMBER_INFO
+		    WHERE DEL_YN = 'N'
+		    AND MEMBER_ID IN (SELECT DISTINCT(MEMBER_ID) FROM INSTRUCTOR_INFO) 
+		    ORDER BY MEMBER_ID
+		    )
+		WHERE NUM BETWEEN #{startList} AND #{listSize} -->
+	</select>
+	
+	<!-- 강의관리 페이지에서 해당 종목의 강사 리스트를 조회 -->
+	<select id="selectInstructorList2" resultMap="instructor">
+		SELECT INST_NUM
+			, MEMBER_NAME
+		FROM INSTRUCTOR_INFO I, MEMBER_INFO M
+		WHERE CLASSES_CODE = #{classesCode}
+		AND I.MEMBER_ID = M.MEMBER_ID
+		AND INST_DEL = 'N'
+	</select>
+	
+	<!-- 강사 그만둔강사 탈락된 강사지원자로 변경 -->
+	<update id="updateInstructorInstDel">
+		UPDATE INSTRUCTOR_INFO
+		SET INST_DEL = #{instDel}
+		WHERE INST_NUM = #{instNum}
+	</update>
+	
+	<select id="nowClassStudentInfo" resultMap="member">
+		SELECT MEMBER_NAME
+			, MEMBER_GENDER
+			, TO_CHAR(MEMBER_BIRTHDAY, 'YYYY.MM.DD') AS MEMBER_BIRTHDAY
+			, MEMBER_TEL
+			, MEMBER_TEL2
+			, MEMBER_ADDR
+			, MEMBER_EMAIL
+		FROM MEMBER_INFO M, REGISTER_CLASS C
+		WHERE M.MEMBER_ID = C.MEMBER_ID
+		AND C.CLASS_NUM = #{classNum}
+	</select>
+	
+	<select id="pastClassStudentInfo" resultMap="member">
+		SELECT MEMBER_NAME
+			, MEMBER_GENDER
+			, TO_CHAR(MEMBER_BIRTHDAY, 'YYYY.MM.DD') AS MEMBER_BIRTHDAY
+			, MEMBER_TEL
+			, MEMBER_TEL2
+			, MEMBER_ADDR
+			, MEMBER_EMAIL
+		FROM MEMBER_INFO M, CLASS_LIST C
+		WHERE M.MEMBER_ID = C.MEMBER_ID
+		AND C.CLASS_NUM = #{classNum} 
+	</select>
+	
+	<select id="selectClassesCodeForResume" resultMap="instructor">
+		SELECT REG_NUM
+			, PICTURE
+			, CLASSES_CODE
+			, INST_DEL
+		FROM INSTRUCTOR_INFO
+		WHERE MEMBER_ID = #{memberId}
+		ORDER BY CLASSES_CODE
+	</select>
+	
+	<insert id="sendResume">
+		MERGE INTO INSTRUCTOR_INFO
+		USING DUAL
+		ON (MEMBER_ID = #{memberId} AND CLASSES_CODE = #{classesCode})
+		WHEN MATCHED THEN
+			UPDATE SET
+			LICENSE = #{license}
+			, CAREER = #{career} || '년'
+			, INST_DEL = 'A'
+		WHEN NOT MATCHED THEN
+			INSERT VALUES (
+				(SELECT NVL(MAX(INST_NUM), 0) + 1 FROM INSTRUCTOR_INFO)
+				, #{memberId}
+				, #{regNum}
+				, #{career} || '년'
+				, #{license}
+				, #{picture}
+				, #{classesCode}
+				, 'A'
+			)
+			
+		<!-- INSERT INTO INSTRUCTOR_INFO VALUES (
+			(SELECT NVL(MAX(INST_NUM), 0) + 1 FROM INSTRUCTOR_INFO)
+			, #{memberId}
+			, #{regNum}
+			, #{career} || '년'
+			, #{license}
+			, #{picture}
+			, #{classesCode}
+			, 'A'
+		) -->
+	</insert>
+</mapper>

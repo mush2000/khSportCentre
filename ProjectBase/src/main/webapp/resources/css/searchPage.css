@@ -1,0 +1,94 @@
+@charset "UTF-8";
+
+.listBox {
+    border: 1px solid #d7d7d7;
+    margin-bottom: 20px;
+    padding: 25px 20px;
+    overflow: hidden;
+    z-index: 0; 
+}
+
+input[type="button"].listBtn:hover {
+	text-decoration: none;
+	color: white;
+	cursor: pointer;
+	z-index: 0; 
+}
+
+input[type="button"].listBtn:focus {
+	text-decoration: none;
+	color: white;
+	cursor: pointer;
+	z-index: 0; 
+}
+
+.listTit{
+	text-align: center;
+	z-index: 0; 
+}
+
+.listBtn {
+	height: 35px;
+    display: block;
+    width: 150px;
+    text-align: center;
+    background: #0034a9;
+    color: #fff;
+    position: absolute;
+    right: 15px;
+    margin-top: 25%;
+    z-index: 0; 
+}
+
+
+.listInfo h4, .liftInfo h2 {
+    font-size: 1.2em;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 20px;
+    z-index: 0; 
+}
+
+.listInfo {
+    border-left: 1px solid #ccc;
+    padding-left: 15px;
+    z-index: 0; 
+}
+
+.list li {
+    padding-left: 9px;
+    line-height: 1.8em;
+    z-index: 0; 
+}
+
+
+@media (max-width: 400px) {
+	.listBtn {
+	    width: 90%;
+	    position: relative;
+	    top: 100px;
+	}
+}
+
+@media (max-width: 991px) {
+	.listBtn {
+	    width: 250px;
+	    position: static;
+	    margin: 0 auto;
+	}
+}
+       
+@media (max-width: 991px) {
+	.listTit h2 {
+	    margin-bottom: 20px;
+	    padding-bottom: 14px;
+	    border-bottom: 1px solid #ccc;
+	}
+}
+
+@media (max-width: 991px) {
+	.listInfo h2 {
+    border-left: 0px;
+    padding-left: 15px;
+	}
+}

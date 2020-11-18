@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+.contentsTitle1 {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.contentsTitle2 {
+    height: 100px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+h1.contentsTitle{
+	line-height: 80px;
+	font-weight: bold;
+	text-align: center;
+}
+
+table.rentalManageTable{
+	border-top: 3px solid #0034a9;
+	border-bottom: 1px solid #dddddd;
+}
+
+.title{
+	font-weight: bold;
+	background-color: #F7F7F7;
+	text-align: center;
+}
+
+input[type="text"]
+, select
+, input[type="date"]{
+	border: 1px solid #ddd;
+	height: 28px;
+}
+   

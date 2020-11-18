@@ -1,0 +1,211 @@
+@charset "UTF-8";
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  z-index: 6; 
+}
+
+/* 드롭다운메뉴시작 */
+.db {
+	color: white;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+	z-index: 6;
+	color: #0034a9;
+	width: 80px;
+	padding: 10px 30px 10px 30px;
+} 
+
+.db:hover{
+	text-decoration: none;
+	color: #0034a9;
+}
+
+.dd {
+	position: relative;
+	display: inline-block;
+	z-index: 6; 
+} 
+
+.dd-content {
+	display: none;
+	position: absolute;
+	background-color: white;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 6;
+	font-size: 14px;
+	top: 31px;
+	left: -20px; 
+}
+
+.dd-content a {
+	color: #0034a9;
+	padding: 10px 10px;
+	text-decoration: none;
+	display: block;
+	border-bottom: 1px solid #ddd;
+	z-index: 6; 
+} 
+
+.dd-content a:last-child {
+	border-bottom: none;
+	z-index: 6;
+	text-decoration: none;
+} 
+
+.dd-content a:hover {
+	background-color: #eee;
+	z-index: 6;
+	text-decoration: none;
+	color: #0034a9; 
+} 
+
+.dd:hover .dd-content {
+	display: block;
+	z-index: 6;
+} 
+
+.dd:hover .db {
+	z-index: 6;
+	color: #ffcc00;
+}
+/* 드롭다운메뉴끝 */
+
+
+.titleName:hover
+, .rentalCnt:hover{
+	cursor: pointer;
+}
+
+.titleNameDiv {
+	width: 100%;
+} 
+
+.rentalCnt {
+    -webkit-animation: blink 0.5s linear infinite;
+} 
+@-webkit-keyframes blink {
+    0% { background-color: white; color:red; }
+    80% { background-color: red; color: white; }
+    100% { background-color: white; color:red; }
+/*    from { background-color: red;}
+    to {background-color: green;}  */
+}
+
+input[type="button"].logoutBtn
+, input[type="button"].myInfoBtn{
+	background-color: #ffcc00;
+	color: #0034a9;
+	width: 73px;
+	margin-right: 0;
+	padding: 0;
+	font-family:'S-CoreDream-3Light';
+	font-weight: bold;
+	font-size: 12px;
+}
+
+input[type="button"].logoutBtn:hover
+, input[type="button"].myInfoBtn:hover{
+	cursor: pointer;
+	background-color: #0034a9;
+	color: #ffcc00;
+	font-family:'S-CoreDream-3Light';
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.loginA:link { color: #ffcc00; text-decoration: none;}
+.loginA:visited { color: #ffcc00; text-decoration: none;}
+.loginA:hover { color: #ffcc00; text-decoration: underline; cursor: pointer;}
+
+.joinA:link { color: #ffcc00; text-decoration: none;}
+.joinA:visited { color: #ffcc00; text-decoration: none;}
+.joinA:hover { color: #ffcc00; text-decoration: underline; cursor: pointer;}
+
+.titleA:link { color: #0034a9; text-decoration: none;}
+.titleA:visited { color: #0034a9; text-decoration: none;}
+.titleA:hover { color: #0034a9; text-decoration: none; cursor: pointer;}
+
+.mainMenuA:link { color: #0034a9; text-decoration: none;}
+.mainMenuA:visited { color: #0034a9; text-decoration: none;}
+.mainMenuA:hover { color: #0034a9; text-decoration: none; cursor: pointer;}
+
+.subMenuA:link { color: #0034a9; text-decoration: none;}
+.subMenuA:visited { color: #0034a9; text-decoration: none;}
+.subMenuA:hover { color: #0034a9; text-decoration: underline; cursor: pointer;}
+
+/* 웹폰트 : 에스코어드림Md체 */
+@font-face {
+	font-family: 'S-CoreDream-5Medium';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Reg체 */
+@font-face {
+	font-family: 'S-CoreDream-4Regular';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-4Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 웹폰트 : 에스코어드림Lt체 */
+@font-face {
+	font-family: 'S-CoreDream-3Light';
+	src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* 버튼css */
+/* .loginBtn, .joinBtn{
+    height: 40px;
+    padding: 0 18px;
+    margin-right: 8px;
+    box-sizing: border-box;
+    font-size: 13px;
+    color: #35477D;
+    border: 1px solid white;
+    background-color: white;
+    border-radius: 3px;
+    cursor: pointer;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       

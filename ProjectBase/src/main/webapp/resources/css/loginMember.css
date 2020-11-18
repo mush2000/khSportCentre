@@ -1,0 +1,41 @@
+@charset "UTF-8";
+input::-webkit-input-placeholder {
+	color: #ccc;
+	font-family: 'Noto Sans KR', sans-serif !important;
+	font-size: 14px;
+	font-weight: lighter;
+}       
+
+#memberId, #inputPassword{
+	width: 400px;
+	height: 38px;
+	padding: 5px;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+}
+
+#submitBtn{
+	width: 194px;
+	height: 38px;
+	margin: 0px 3px 0px 3px;	
+}
+
+input[type="button"].joinBtn{
+	width: 194px;
+	height: 38px;
+	margin: 0px 3px 0px 3px;
+	background-color: #ffcc00;
+	border: 1px solid #ffcc00;	
+}
+
+label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 10px !important;
+    color: red;
+    font-weight: lighter !important;
+}
+
+#searchPw:hover, #searchId:hover {
+	cursor: pointer;
+}

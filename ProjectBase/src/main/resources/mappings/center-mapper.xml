@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 맵퍼파일 생성 후 반드시 sql-map-config.xml 파일에 mapper 등록해줘야 함 -->
+<mapper namespace="centerMapper">
+	<resultMap type="com.spring.biz.vo.ClassPlaceVO" id="classPlace">
+		<result column="PLACE_CODE"    				property="placeCode"/>
+		<result column="PLACE_NAME"    				property="placeName"/>
+		<result column="RENTAL_ALLTIME_CHARGE"   	property="rentalAlltimeCharge"/>
+		<result column="RENTAL_HALFTIME_CHARGE"		property="rentalHalftimeCharge"/>
+		<result column="AVAILABLE"					property="available"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.RentalPlaceVO" id="rentalPlace">
+		<result column="RENTAL_CODE"    			property="rentalCode"/>
+		<result column="RENTAL_PLACE_CODE"    		property="rentalPlaceCode"/>
+		<result column="RENTAL_DATE"   				property="rentalDate"/>
+		<result column="RENTAL_TIME"				property="rentalTime"/>
+		<result column="PLACE_NAME"					property="placeName"/>
+		<result column="PLACE_CODE"					property="placeCode"/>
+		<result column="RENTAL_MEMBER_ID"			property="rentalMemberId"/>
+		<result column="RENTAL_MEMBER_NAME"			property="rentalMemberName"/>
+		<result column="RENTAL_APPROVAL_YN"			property="rentalApprovalYN"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.SearchClassVO" id="searchClass">
+		<result column="CLASSES_CODE" 			property="classesCode"/>
+		<result column="CLASSES_NAME" 			property="classesName"/>
+		<result column="CLASSES_FEE" 			property="classesFee"/>
+		<result column="PLACE_CODE" 			property="placeCode"/>
+		<result column="PLACE_NAME" 			property="placeName"/>
+		<result column="CLASS_DAY_CODE" 		property="classDayCode"/>
+		<result column="CLASS_DAY" 				property="classDay"/>
+		<result column="CLASS_NUM" 				property="classNum"/>
+		<result column="CLASS_DATE" 			property="classDate"/>
+		<result column="CLASS_START_DATE" 		property="classStartDate"/>
+		<result column="MAX_MEMBER" 			property="maxMember"/>
+		<result column="MIN_MEMBER" 			property="minMember"/>
+		<result column="REG_MEMBER_CNT" 		property="regMemberCnt"/>
+		<result column="CLASS_APPLY_START" 		property="classApplyStart"/>
+		<result column="CLASS_APPLY_END" 		property="classApplyEnd"/>
+	</resultMap>
+	
+	<resultMap type="com.spring.biz.vo.MainBoardVO" id="mainBoard">
+		<result column="BOARD_NUM"    			property="boardNum"/>
+		<result column="KIND_OF_BOARD"    		property="kindOfBoard"/>
+		<result column="BOARD_TITLE"   			property="boardTitle"/>
+		<result column="CREATE_DATE"			property="createDate"/>
+	</resultMap>
+	
+	<select id="selectClassPlaceList" resultMap="classPlace">
+		SELECT PLACE_CODE
+		        , PLACE_NAME
+		        , RENTAL_ALLTIME_CHARGE
+		        , RENTAL_HALFTIME_CHARGE
+		FROM CLASS_PLACE
+	</select>
+	
+	<select id="selectReserveStatus" resultMap="rentalPlace">
+		SELECT RP.RENTAL_CODE
+		        , CP.PLACE_NAME
+		        , RP.RENTAL_PLACE_CODE
+		        , TO_CHAR(RP.RENTAL_DATE, 'YYYY-MM-DD') AS RENTAL_DATE
+		        , RP.RENTAL_TIME
+		        , RP.RENTAL_APPROVAL_YN
+		FROM RENTAL_PLACE RP, CLASS_PLACE CP
+		WHERE RP.RENTAL_PLACE_CODE = CP.PLACE_CODE
+		AND RENTAL_DATE = #{rentalDate}
+	</select>
+	
+	<select id="selectStep1" resultMap="rentalPlace">
+		SELECT PLACE_CODE
+		              , PLACE_NAME
+		      FROM CLASS_PLACE
+		      WHERE PLACE_CODE NOT IN (SELECT RENTAL_PLACE_CODE
+		FROM 
+		(
+		    SELECT RENTAL_PLACE_CODE
+		        , LISTAGG(RENTAL_TIME, '') WITHIN GROUP (ORDER BY RENTAL_TIME) AS RENTAL_TIME
+		    FROM RENTAL_PLACE
+		    WHERE RENTAL_DATE = #{rentalDate}
+		    GROUP BY RENTAL_PLACE_CODE
+		)
+		WHERE RENTAL_TIME LIKE '%D%'
+		OR RENTAL_TIME = 'AP')
+		ORDER BY PLACE_CODE
+	</select>
+	
+	<select id="selectStep2" resultMap="rentalPlace">
+		SELECT RENTAL_TIME
+		FROM RENTAL_PLACE RP, CLASS_PLACE CP
+		WHERE RP.RENTAL_PLACE_CODE = CP.PLACE_CODE
+		AND RP.RENTAL_DATE = #{rentalDate}
+		AND CP.PLACE_CODE = #{rentalPlaceCode}
+	</select>
+	
+	<insert id="insertReserve">
+		INSERT INTO RENTAL_PLACE
+		(
+			RENTAL_CODE
+			, RENTAL_PLACE_CODE
+			, RENTAL_DATE
+			, RENTAL_TIME
+			, RENTAL_MEMBER_ID
+		)
+		SELECT TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')||'_'||#{rentalMemberId}
+			, #{rentalPlaceCode}
+			, #{rentalDate}
+			, #{rentalTime}
+			, #{rentalMemberId}   
+		FROM DUAL
+		WHERE NOT EXISTS
+			(SELECT RENTAL_CODE
+			FROM RENTAL_PLACE
+			WHERE RENTAL_PLACE_CODE = #{rentalPlaceCode}
+			AND RENTAL_DATE = #{rentalDate}
+			AND RENTAL_TIME = #{rentalTime}
+			AND RENTAL_MEMBER_ID = #{rentalMemberId}
+		)
+	</insert>
+	
+	<select id="selectSearchClassList" parameterType="hashMap" resultMap="searchClass">	
+		SELECT * 
+    	FROM (
+		        SELECT ROWNUM ROW_NUM, A.* 
+		        FROM (SELECT C.CLASSES_NAME AS CLASSES_NAME
+		                , C.CLASSES_FEE AS CLASSES_FEE
+		                , P.PLACE_NAME AS PLACE_NAME
+		                , C.CLASSES_CODE AS CLASSES_CODE
+		                , I.CLASS_NUM AS CLASS_NUM
+		                , D.CLASS_DAY AS CLASS_DAY
+		                , P.PLACE_CODE AS PLACE_CODE
+		                , D.CLASS_DAY_CODE AS CLASS_DAY_CODE
+		                , TO_CHAR(I.CLASS_DATE, 'YYYY') || '년 ' || TO_CHAR(I.CLASS_DATE, 'MM') || '월' AS CLASS_START_DATE
+		                , TO_CHAR(I.CLASS_DATE, 'YYYY-MM-DD') AS CLASS_DATE
+		                , C.MAX_MEMBER AS MAX_MEMBER
+		                , I.REG_MEMBER_CNT AS REG_MEMBER_CNT
+		                , C.MIN_MEMBER AS MIN_MEMBER
+		                , DECODE(SUBSTR(TO_CHAR(CLASS_DATE, 'YYYY/MM/DD'), -1, 2), 01, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 14, 'YYYY-MM-DD')
+		                                                                    , 05, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 10, 'YYYY-MM-DD')) AS CLASS_APPLY_START
+		                , DECODE(SUBSTR(TO_CHAR(CLASS_DATE, 'YYYY/MM/DD'), -1, 2), 01, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 24, 'YYYY-MM-DD')
+		                                                                    , 05, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 20, 'YYYY-MM-DD')) AS CLASS_APPLY_END
+		            FROM CLASSES C, CLASS_PLACE P, CLASS_INFO I, CLASS_DAY D
+		            WHERE P.PLACE_CODE = I.LOC_CODE
+		            AND C.CLASSES_CODE = I.CLASSES_CODE
+		            AND I.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		            AND C.CLASSES_CODE IN (SELECT CLASSES_CODE
+		                                	FROM CLASSES
+		                                	WHERE UPPER(CLASSES_NAME) LIKE UPPER('%'||#{searchWord}||'%'))
+		            ORDER BY CLASS_DATE DESC, CLASSES_NAME
+		            ) A
+        )
+		WHERE ROW_NUM BETWEEN #{pagination.startList} AND #{pagination.listSize}
+	</select>
+	
+	<select id="selectNoticeList" resultMap="mainBoard">
+		SELECT * 
+	    FROM (
+	        SELECT ROWNUM RN, A.* 
+	            FROM (SELECT BOARD_NUM
+	                        , KIND_OF_BOARD
+	                        , BOARD_TITLE
+	                        , TO_CHAR(CREATE_DATE, 'YYYY.MM.DD') AS CREATE_DATE
+		                FROM BOARD WHERE KIND_OF_BOARD = 1
+		                ORDER BY BOARD_NUM DESC
+		                ) A
+		        )
+		WHERE RN BETWEEN 1 AND 5
+	</select>
+	
+	<select id="selectQnaList" resultMap="mainBoard">
+		SELECT * 
+	    FROM (
+	        SELECT ROWNUM RN, A.* 
+	            FROM (SELECT BOARD_NUM
+	                        , KIND_OF_BOARD
+	                        , BOARD_TITLE
+	                        , TO_CHAR(CREATE_DATE, 'YYYY.MM.DD') AS CREATE_DATE
+	                FROM BOARD WHERE KIND_OF_BOARD = 3
+	                ORDER BY BOARD_NUM DESC
+	                ) A
+	        	)
+		WHERE RN BETWEEN 1 AND 5
+	</select>
+	
+	<select id="selectFaqList" resultMap="mainBoard">
+		SELECT * 
+	    FROM (
+	        SELECT ROWNUM RN, A.* 
+	            FROM (SELECT BOARD_NUM
+	                        , KIND_OF_BOARD
+	                        , BOARD_TITLE
+	                        , TO_CHAR(CREATE_DATE, 'YYYY.MM.DD') AS CREATE_DATE
+	                FROM BOARD WHERE KIND_OF_BOARD = 4
+	                ORDER BY BOARD_NUM DESC
+	                ) A
+	        	)
+		WHERE RN BETWEEN 1 AND 5
+	</select>
+	
+	<select id="selectSearchPageCnt" resultType="int">
+		SELECT COUNT(*)
+		FROM (SELECT ROWNUM AS ROW_NUM
+		        , C.CLASSES_NAME AS CLASSES_NAME
+		        , C.CLASSES_FEE AS CLASSES_FEE
+		        , P.PLACE_NAME AS PLACE_NAME
+		        , C.CLASSES_CODE AS CLASSES_CODE
+		        , I.CLASS_NUM AS CLASS_NUM
+		        , D.CLASS_DAY AS CLASS_DAY
+		        , P.PLACE_CODE AS PLACE_CODE
+		        , D.CLASS_DAY_CODE AS CLASS_DAY_CODE
+		        , TO_CHAR(I.CLASS_DATE, 'YYYY-MM') AS CLASS_DATE
+		        , C.MAX_MEMBER AS MAX_MEMBER
+		        , I.REG_MEMBER_CNT AS REG_MEMBER_CNT
+		        , C.MIN_MEMBER AS MIN_MEMBER
+		        , DECODE(SUBSTR(TO_CHAR(CLASS_DATE, 'YYYY/MM/DD'), -1, 2), 01, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 14, 'YYYY-MM-DD')
+		                                                            , 05, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 10, 'YYYY-MM-DD')) AS CLASS_APPLY_START
+		        , DECODE(SUBSTR(TO_CHAR(CLASS_DATE, 'YYYY/MM/DD'), -1, 2), 01, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 24, 'YYYY-MM-DD')
+		                                                            , 05, TO_CHAR(ADD_MONTHS(CLASS_DATE, -1) + 20, 'YYYY-MM-DD')) AS CLASS_APPLY_END
+		FROM CLASSES C, CLASS_PLACE P, CLASS_INFO I, CLASS_DAY D
+		WHERE P.PLACE_CODE = I.LOC_CODE
+		AND C.CLASSES_CODE = I.CLASSES_CODE
+		AND I.CLASS_DAY_CODE = D.CLASS_DAY_CODE
+		AND C.CLASSES_CODE IN (SELECT CLASSES_CODE
+		                        FROM CLASSES
+		                        WHERE UPPER(CLASSES_NAME) LIKE UPPER('%'||#{searchWord}||'%'))
+		ORDER BY CLASS_DATE DESC, CLASSES_NAME)
+	</select>
+	
+	<select id="selectRentalList" resultMap="rentalPlace">
+		SELECT R.RENTAL_CODE AS RENTAL_CODE
+	        , R.RENTAL_PLACE_CODE AS RENTAL_PLACE_CODE
+	        , TO_CHAR(R.RENTAL_DATE, 'YYYY-MM-DD') AS RENTAL_DATE
+	        , R.RENTAL_TIME AS RENTAL_TIME
+	        , R.RENTAL_MEMBER_ID AS RENTAL_MEMBER_ID
+	        , R.RENTAL_APPROVAL_YN AS RENTAL_APPROVAL_YN
+	        , C.PLACE_NAME AS PLACE_NAME
+	        , M.MEMBER_NAME AS RENTAL_MEMBER_NAME
+		FROM RENTAL_PLACE R, CLASS_PLACE C, MEMBER_INFO M
+		WHERE R.RENTAL_PLACE_CODE = C.PLACE_CODE
+		AND R.RENTAL_MEMBER_ID = M.MEMBER_ID
+		AND TO_CHAR(RENTAL_DATE, 'YYYY-MM-DD') &lt;= #{toDate}
+		AND TO_CHAR(RENTAL_DATE, 'YYYY-MM-DD') &gt;= #{fromDate}
+		<if test="searchValue != null and searchValue != ''">
+		AND UPPER(${searchKeyword}) LIKE UPPER('%'||#{searchValue}||'%')
+		</if>
+		<if test='rentalApprovalYN == "Y"'>
+		AND RENTAL_APPROVAL_YN = 'Y'
+		</if>
+		ORDER BY R.RENTAL_DATE, R.RENTAL_CODE
+	</select>
+	
+	<update id="updateRentalApprovalYN">
+		UPDATE RENTAL_PLACE
+		SET RENTAL_APPROVAL_YN = 'Y'
+		WHERE RENTAL_CODE = #{rentalCode}
+	</update>
+	
+	<update id="updateRentalApprovalYNList">
+		UPDATE RENTAL_PLACE
+		SET RENTAL_APPROVAL_YN = 'Y'
+		WHERE RENTAL_CODE
+		<foreach collection="rentalCodeList" item="rentalCode" open="IN (" close=")" separator=",">
+		    #{rentalCode}
+		</foreach>
+	</update>
+	
+	<delete id="deleteRental">
+		DELETE RENTAL_PLACE
+		WHERE RENTAL_CODE = #{rentalCode}
+	</delete>
+	
+	<delete id="deleteRentalList">
+		DELETE RENTAL_PLACE
+		WHERE RENTAL_CODE
+		<foreach collection="rentalCodeList" item="rentalCode" open="IN (" close=")" separator=",">
+			#{rentalCode}
+		</foreach>
+	</delete>
+	
+	<select id="selectPlaceRentalCnt" resultType="int">
+		SELECT COUNT(*) 
+		FROM (SELECT RENTAL_CODE 
+        		FROM RENTAL_PLACE
+        		WHERE RENTAL_APPROVAL_YN = 'N')
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
